@@ -4,7 +4,7 @@
 ** File description:
 ** Push an element to the end of a dynamic array
 */
-#include "array.h"
+#include "utils/array.h"
 
 int array_push(array_t *array, void *element)
 {

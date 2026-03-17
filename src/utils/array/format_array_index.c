@@ -4,7 +4,7 @@
 ** File description:
 ** Format an index for a dynamic array
 */
-#include "array.h"
+#include "utils/array.h"
 
 int format_array_index(array_t *array, int index, int allow_overflow)
 {

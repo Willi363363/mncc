@@ -5,7 +5,7 @@
 ** Insert an element in a dynamic array at a specific index
 */
 #include <stdlib.h>
-#include "array.h"
+#include "utils/array.h"
 #include "main.h"
 
 int realloc_array(array_t *array)

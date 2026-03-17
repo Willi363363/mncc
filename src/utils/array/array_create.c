@@ -5,7 +5,7 @@
 ** Create a dynamic array
 */
 #include <stdlib.h>
-#include "array.h"
+#include "utils/array.h"
 
 array_t *array_create(array_element_destroy_t destroy_element)
 {

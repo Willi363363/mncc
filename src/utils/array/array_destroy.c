@@ -5,7 +5,7 @@
 ** Function to destroy an array and free its resources
 */
 #include <stdlib.h>
-#include "array.h"
+#include "utils/array.h"
 
 void array_destroy(array_t *array, int destroy_elements)
 {

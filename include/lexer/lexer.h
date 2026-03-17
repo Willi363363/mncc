@@ -6,7 +6,7 @@
 */
 #ifndef LEXER_H
     #define LEXER_H
-    #include "array.h"
+    #include "utils/array.h"
 
 typedef struct lexer_s {
     array_t *tokens;

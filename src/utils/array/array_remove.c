@@ -4,7 +4,7 @@
 ** File description:
 ** Remove an element from a dynamic array at a specific index
 */
-#include "array.h"
+#include "utils/array.h"
 #include "main.h"
 
 int array_remove(array_t *array, int index)

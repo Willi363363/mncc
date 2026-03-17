@@ -10,22 +10,16 @@
 
 int get_error(int code, const char *message, const char *detail)
 {
-    switch (code) {
-        case EINP:
-            fprintf(stderr, "Implementation error");
-            break;
-        case ELEX:
-            fprintf(stderr, "Lexer error");
-            break;
-        case EPAR:
-            fprintf(stderr, "Parser error");
-            break;
-        case EGEN:
-            fprintf(stderr, "Generation error");
-            break;
-        default:
-            return code;
-    }
+    if (code < ELEX || code > EGEN)
+        return code;
+    if (code == EINP)
+        fprintf(stderr, "Implementation error");
+    if (code == ELEX)
+        fprintf(stderr, "Lexer error");
+    if (code == EPAR)
+        fprintf(stderr, "Parser error");
+    if (code == EGEN)
+        fprintf(stderr, "Generation error");
     if (message) {
         fprintf(stderr, ": %s\n", message);
     } else {

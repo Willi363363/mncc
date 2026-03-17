@@ -18,9 +18,10 @@ static int print_usage(void)
 static int is_not_valid_file(char const *path)
 {
     struct stat s = {0};
-    
+
     if (!path || stat(path, &s) < 0)
-        return get_error(EINP, "file not found", "file can't be read or doensn't exist");
+        return get_error(EINP, "file not found",
+            "file can't be read or doensn't exist");
     return SUCCESS;
 }
 

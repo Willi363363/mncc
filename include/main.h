@@ -12,7 +12,7 @@
     #define EGEN (int)(101)
     #define EINP (int)(102)
     #define SUCCESS (int)(0)
-    #define ERROR_STATUS (int)(84)
+    #define ERROR (int)(84)
     #define STDERR (int)(2)
     #define STDOUT (int)(1)
 #endif /* !MAIN_H_ */

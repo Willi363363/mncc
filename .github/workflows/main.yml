@@ -1,0 +1,71 @@
+name: Build tests
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  basic-build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: make
+      run: make CICD=1
+    - name: make clean
+      run: make clean
+    - name: make fclean
+      run: make fclean
+    - name: make re
+      run: make CICD=1 re
+    - name: check binary
+      run: ls -l ./mncc
+
+  cs-build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Copy Dockerfile inside root
+      run : cp ./.github/Dockerfile ./Dockerfile
+    - name: Build coding-style tests
+      run: docker build . -t cs-test --file Dockerfile --tag my-image-name:$(date +%s)
+    - name: Run basic command
+      run : docker run cs-test:latest
+  
+  coverage-build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Copy Dockerfile inside root
+      run : cp ./.github/Dockerfile2 ./Dockerfile
+    - name: Build coverage-style tests
+      run: docker build . -t coverage-test --file Dockerfile --tag my-image-name:$(date +%s)
+    - name: Run basic command
+      run : docker run coverage-test:latest
+
+  valgrind-build:
+
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    - name: update apt
+      run : sudo apt-get update
+    - name: setup valgrind
+      run:  sudo apt-get install -y valgrind
+    - name: make
+      run: make CICD=1 DEBUG=1
+    - name: check file
+      run: ls -l ./mncc
+    - name: run valgrind
+      run: valgrind --leak-check=full --show-leak-kinds=all ./mncc ./src/main.c
+    - name: clean
+      run: make fclean

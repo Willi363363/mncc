@@ -1,0 +1,12 @@
+FROM epitechcontent/epitest-docker:latest AS builder
+WORKDIR /app/make
+COPY . .
+
+RUN make
+RUN make unit_tests
+RUN make tests_clean
+RUN make tests_re
+
+# Cleaning and testing basic executable
+
+CMD gcovr --exclude tests/tests.c.c --gcov-executable "llvm-cov gcov"; gcovr --exclude tests/tests.c --gcov-executable "llvm-cov gcov" --branches

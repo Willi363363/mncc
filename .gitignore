@@ -7,3 +7,4 @@ vgcore*
 *.gcno
 unit_tests
 output.asm
+mncc

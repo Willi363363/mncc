@@ -6,6 +6,7 @@
 */
 
 #include "main.h"
+#include "utils/utils.h"
 #include <sys/stat.h>
 #include <string.h>
 
@@ -28,6 +29,6 @@ int main(int ac, char **av)
     if (ac != 2 || !strcmp(av[1], "-h"))
         return print_usage();
     if (is_not_valid_file(av[1]))
-        return EINP;
+        return ERROR;
     return SUCCESS;
 }

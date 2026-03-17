@@ -9,7 +9,7 @@
     #define MAIN_H_
     #define ELEX (int)(100)
     #define EPAR (int)(101)
-    #define EGEN (int)(101)
+    #define EGEN (int)(103)
     #define EINP (int)(102)
     #define SUCCESS (int)(0)
     #define ERROR (int)(84)

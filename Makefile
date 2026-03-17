@@ -50,4 +50,6 @@ $(TESTS): $(NAME)
 tests_run: $(TESTS)
 	./$(TESTS)
 
+tests_re: clean tests_run
+
 .PHONY: all clean fclean re

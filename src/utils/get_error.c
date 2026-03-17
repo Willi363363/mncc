@@ -8,7 +8,7 @@
 #include "main.h"
 #include <stdio.h>
 
-static int print_EINP_error(const char *message, const char *detail)
+static int print_einp_error(const char *message, const char *detail)
 {
     if (message) {
         fprintf(stderr, "Input error : %s\n", message);
@@ -20,7 +20,7 @@ static int print_EINP_error(const char *message, const char *detail)
     return EINP;
 }
 
-static int print_ELEX_error(const char *message, const char *detail)
+static int print_elex_error(const char *message, const char *detail)
 {
     if (message) {
         fprintf(stderr, "Lexer error : %s\n", message);
@@ -32,7 +32,7 @@ static int print_ELEX_error(const char *message, const char *detail)
     return ELEX;
 }
 
-static int print_EPAR_error(const char *message, const char *detail)
+static int print_epar_error(const char *message, const char *detail)
 {
     if (message) {
         fprintf(stderr, "Parser error : %s\n", message);
@@ -44,7 +44,7 @@ static int print_EPAR_error(const char *message, const char *detail)
     return EPAR;
 }
 
-static int print_EGEN_error(const char *message, const char *detail)
+static int print_egen_error(const char *message, const char *detail)
 {
     if (message) {
         fprintf(stderr, "Code generation error : %s\n", message);

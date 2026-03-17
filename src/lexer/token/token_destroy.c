@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** mncc
 ** File description:
-** token_destroy
+** Creates a new token instance
 */
 
 #include <stdlib.h>

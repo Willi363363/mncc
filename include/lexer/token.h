@@ -42,4 +42,7 @@ typedef struct token_s {
     char *value;
 } token_t;
 
+token_t *token_create(token_type_t type, const char *value);
+void token_destroy(token_t *token);
+
 #endif /* TOKEN_H */

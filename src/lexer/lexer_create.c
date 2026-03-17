@@ -1,8 +1,8 @@
 /*
 ** EPITECH PROJECT, 2026
-** lexer.c
+** lexer_create.c
 ** File description:
-** Lexer implementation - tokenizes a C source file into tokens
+** Creates a new lexer instance
 */
 
 #include <stdlib.h>

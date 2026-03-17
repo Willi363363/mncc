@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** mncc
 ** File description:
-** lexer_destroy
+** Destroys a lexer instance
 */
 
 #include <stdlib.h>

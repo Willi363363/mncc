@@ -13,5 +13,14 @@
 
 lexer_t *lexer_create(void)
 {
-    return NULL;
+    lexer_t *lexer = malloc(sizeof(lexer_t));
+
+    if (!lexer)
+        return NULL;
+    lexer->tokens = array_create((array_element_destroy_t)token_destroy);
+    if (!lexer->tokens) {
+        free(lexer);
+        return NULL;
+    }
+    return lexer;
 }

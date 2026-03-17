@@ -7,12 +7,15 @@
 #ifndef LEXER_H
     #define LEXER_H
     #include "utils/array.h"
+    #include "lexer/token.h"
 
 typedef struct lexer_s {
     array_t *tokens;
 } lexer_t;
 
-lexer_t *init_lexer(void);
-void run_lexer(lexer_t *lexer, char const *src);
+lexer_t *lexer_create(void);
+void lexer_destroy(lexer_t *lexer);
+
+void token_destroy(token_t *token);
 
 #endif /* LEXER_H */

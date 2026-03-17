@@ -1,6 +1,6 @@
 ##
 ## EPITECH PROJECT, 2026
-## gcc
+## mncc
 ## File description:
 ## Makefile
 ##
@@ -20,12 +20,17 @@ endif
 
 INCLUDE		=	-I./include/
 
-LIB	=	./lib/libmy.a	\
-		./lib/ll.a
-
 SRCF		=	src/
 
-SRC			=	
+SRC			=	$(SRCF)lexer.c		\
+				$(SRCF)lexer_op.c	\
+				$(SRCF)parser.c		\
+				$(SRCF)parse_stmt.c	\
+				$(SRCF)parse_expr.c	\
+				$(SRCF)codegen.c	\
+				$(SRCF)codegen_stmt.c	\
+				$(SRCF)codegen_expr.c	\
+				$(SRCF)utils.c
 
 OBJ			=	$(SRC:.c=.o)
 
@@ -49,8 +54,6 @@ clean:
 	$(RM) $(OBJ)
 
 fclean:		clean
-	make -f Makefile -C ./lib/my/ fclean
-	make -f Makefile -C ./lib/linked_list/ fclean
 	$(RM) $(NAME)
 
 re:			fclean all
@@ -62,8 +65,8 @@ tests_run:	unit_tests
 	$(TEST_BIN)
 
 tests_clean: 
-	rm -f ./unit_tests*
+	rm -f ./unit_tests* *.gcda *.gcno
 
 tests_re: tests_clean tests_run
 
-.PHONY: all clean fclean re unit_tests tests_run tests_clean tests_re $(LIB)
+.PHONY: all clean fclean re unit_tests tests_run tests_clean tests_re

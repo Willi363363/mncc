@@ -3,3 +3,7 @@
 *.o
 vgcore*
 *.pch
+*.gcda
+*.gcno
+unit_tests
+output.asm

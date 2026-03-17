@@ -66,6 +66,6 @@ jobs:
     - name: check file
       run: ls -l ./mncc
     - name: run valgrind
-      run: valgrind --leak-check=full --show-leak-kinds=all ./mncc ./src/main.c
+      run: valgrind --leak-check=full --show-leak-kinds=all ./mncc ./main.c
     - name: clean
       run: make fclean

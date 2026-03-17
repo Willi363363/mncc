@@ -5,9 +5,29 @@
 ** mncc executable
 */
 
-int main(int argc, char **argv)
+#include "main.h"
+#include <sys/stat.h>
+#include <string.h>
+
+static int print_usage(void)
 {
-    (void)argc;
-    (void)argv;
-    return 0;
+    return SUCCESS;
+}
+
+static int is_not_valid_file(char const *path)
+{
+    struct stat s = {0};
+    
+    if (!path || stat(path, &s) < 0)
+        return get_error(EINP, "file not found", "file can't be read or doensn't exist");
+    return SUCCESS;
+}
+
+int main(int ac, char **av)
+{
+    if (ac != 2 || !strcmp(av[1], "-h"))
+        return print_usage();
+    if (is_not_valid_file(av[1]))
+        return EINP;
+    return SUCCESS;
 }

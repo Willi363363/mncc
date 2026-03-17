@@ -3,3 +3,7 @@
 *.o
 vgcore*
 *.pch
+compile_commands.json
+*.d
+mncc
+.cache

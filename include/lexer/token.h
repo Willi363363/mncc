@@ -1,0 +1,43 @@
+/*
+** EPITECH PROJECT, 2026
+** token.h
+** File description:
+** Token structure definition
+*/
+
+#ifndef TOKEN_H
+    #define TOKEN_H
+
+typedef enum token_type_e {
+    // data types
+    TOK_INT,
+
+    // keywords
+    TOK_RETURN,
+
+    // identifiers and literals
+    TOK_IDENT,
+
+    // operators
+    TOK_EQ,         // =
+    TOK_PLUS,       // +
+    TOK_MINUS,      // -
+    TOK_MUL,        // *
+    TOK_DIV,        // /
+
+    // punctuation
+    TOK_SEMI,       // ;
+    TOK_LPAREN,     // (
+    TOK_RPAREN,     // )
+    TOK_LBRACE,     // {
+    TOK_RBRACE,     // }
+    TOK_COMMA,      // ,
+    TOK_EOF
+} token_type_t;
+
+typedef struct token_s {
+    token_type_t type;
+    char *value;
+} token_t;
+
+#endif /* TOKEN_H */

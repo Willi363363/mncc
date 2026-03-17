@@ -1,69 +1,53 @@
 ##
 ## EPITECH PROJECT, 2026
-## gcc
-## File description:
 ## Makefile
-##
-
+## File description:
+## Makefile for mncc project
+#
 ifdef CICD
-	CC			=	gcc
+	CC = gcc
 else
-	CC			=	epiclang
+	CC = epiclang
 endif
 
-CFLAGS		=	-Wall -Wextra $(INCLUDE)
-
+CFLAGS = -Iinclude -W -Wall -Werror -Wextra -g
+LDFLAGS = -g
 ifdef DEBUG
-	CFLAGS		+=	-g3
-
+	CFLAGS += -g3
 endif
 
-INCLUDE		=	-I./include/
+NAME = mncc
 
-LIB	=	./lib/libmy.a	\
-		./lib/ll.a
+SRC = $(shell find src -name '*.c')
+SRC_OBJ = $(SRC:.c=.o)
 
-SRCF		=	src/
+MAIN = main.c
+MAIN_OBJ = $(MAIN:.c=.o)
 
-SRC			=	
+TESTS = unit_tests
+TESTS_SRC = $(shell find tests -name '*.c')
+TESTS_LDFLAGS = -lcriterion
 
-OBJ			=	$(SRC:.c=.o)
+all: $(NAME)
 
-NAME		=	./mncc
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
-MAIN		=	$(SRCF)main.c
+$(NAME): $(SRC_OBJ) $(MAIN_OBJ)
+	$(CC) $(LDFLAGS) -o $@ $^
 
-TEST_FILES	=	tests/tests.c
-
-TEST_BIN	=	./unit_tests
-TEST_FLAGS	=	--coverage -lcriterion
-
-all:        $(NAME)
-
-$(NAME): $(OBJ) $(MAIN)
-	$(CC) $^ $(CFLAGS) -o $@
-
-%o:            %.c
-	$(CC) -c $< $(CFLAGS) -o $@
 clean:
-	$(RM) $(OBJ)
+	$(RM) $(SRC_OBJ) $(MAIN_OBJ) *.gcno *.gcda *.gcov
 
-fclean:		clean
-	make -f Makefile -C ./lib/my/ fclean
-	make -f Makefile -C ./lib/linked_list/ fclean
-	$(RM) $(NAME)
+fclean: clean
+	$(RM) $(NAME) $(TESTS)
 
-re:			fclean all
+re: fclean all
 
-unit_tests:
-	clang $(TEST_FILES) $(SRC) $(INCLUDE) $(TEST_FLAGS) -o $(TEST_BIN)
+$(TESTS): $(NAME)
+	$(CC) $(CFLAGS) $(TESTS_LDFLAGS) $(TESTS_SRC) $(SRC) -o $@
 
-tests_run:	unit_tests
-	$(TEST_BIN)
+tests_run: $(TESTS)
+	./$(TESTS)
 
-tests_clean: 
-	rm -f ./unit_tests*
-
-tests_re: tests_clean tests_run
-
-.PHONY: all clean fclean re unit_tests tests_run tests_clean tests_re $(LIB)
+.PHONY: all clean fclean re

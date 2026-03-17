@@ -18,6 +18,8 @@ typedef enum token_type_e {
     // identifiers and literals
     TOK_IDENT,
 
+    TOK_NUMBER,
+
     // operators
     TOK_EQ,         // =
     TOK_PLUS,       // +

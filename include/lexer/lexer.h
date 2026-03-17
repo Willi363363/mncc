@@ -12,4 +12,7 @@ typedef struct lexer_s {
     array_t *tokens;
 } lexer_t;
 
+lexer_t *init_lexer(void);
+void run_lexer(lexer_t *lexer, char const *src);
+
 #endif /* LEXER_H */

@@ -5,8 +5,8 @@
 ** Parser node header file
 */
 #ifndef NODE_H
-#define NODE_H
-#include "utils/array.h"
+    #define NODE_H
+    #include "utils/array.h"
 
 typedef enum operator_type_e { OP_ADD, OP_SUB, OP_MUL, OP_DIV } operator_type_t;
 

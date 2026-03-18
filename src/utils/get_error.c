@@ -7,11 +7,13 @@
 
 #include "main.h"
 #include <stdio.h>
+#include <errno.h>
 
 int get_error(int code, const char *message, const char *detail)
 {
-    if (code < ELEX || code > EGEN)
-        return code;
+    if (code < ELEX || code > EGEN) {
+        perror("Error");
+    }
     if (code == EINP)
         fprintf(stderr, "Implementation error");
     if (code == ELEX)

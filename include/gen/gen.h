@@ -39,6 +39,7 @@ int gen_declaration(gen_t *gen, node_t *node);
 int gen_assignement(gen_t *gen, node_t *node);
 int gen_return(gen_t *gen, node_t *node);
 int gen_block(gen_t *gen, node_t *node);
+int gen_call(gen_t *gen, node_t *node);
 
 // expression generation
 int gen_expression(gen_t *gen, node_t *node);

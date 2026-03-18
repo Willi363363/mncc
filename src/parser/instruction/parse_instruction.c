@@ -118,9 +118,7 @@ node_t *parse_instruction(parser_t *parser)
         return NULL;
     if (!parser_match(parser, TOK_SEMI)) {
         node_destroy(node);
-        get_error(EPAR,
-            "missing semicolon",
-            "expected ';' at the end of instruction");
+        get_error(EPAR, "missing semicolon");
         return NULL;
     }
     return node;

@@ -1,3 +1,10 @@
+/*
+** EPITECH PROJECT, 2026
+** mncc
+** File description:
+** gen
+*/
+
 #ifndef GEN_H
     #define GEN_H
     #include <stdio.h>

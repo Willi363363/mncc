@@ -64,6 +64,8 @@ static const char *get_punctuation_token_str(token_type_t type)
         return "TOK_EOF";
     if (type == TOK_VOID)
         return "TOK_VOID";
+    if (type == TOK_NUMBER)
+        return "TOK_NUMBER";
     return "TOK_UNKNOWN";
 }
 

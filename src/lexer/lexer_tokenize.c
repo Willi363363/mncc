@@ -12,57 +12,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-static token_type_t get_keyword_type(const char *keyword)
-{
-    if (strcmp(keyword, "if") == 0)
-        return TOK_IF;
-    if (strcmp(keyword, "else") == 0)
-        return TOK_ELSE;
-    if (strcmp(keyword, "while") == 0)
-        return TOK_WHILE;
-    if (strcmp(keyword, "for") == 0)
-        return TOK_FOR;
-    if (strcmp(keyword, "return") == 0)
-        return TOK_RETURN;
-    if (strcmp(keyword, "int") == 0)
-        return TOK_INT;
-    if (strcmp(keyword, "void") == 0)
-        return TOK_VOID;
-    return TOK_IDENT;
-}
-
-static token_type_t get_operator_type(char c)
-{
-    if (c == '=')
-        return TOK_EQ;
-    if (c == '+')
-        return TOK_PLUS;
-    if (c == '-')
-        return TOK_MINUS;
-    if (c == '*')
-        return TOK_MUL;
-    if (c == '/')
-        return TOK_DIV;
-    return TOK_EOF;
-}
-
-static token_type_t get_punctuation_type(char c)
-{
-    if (c == ';')
-        return TOK_SEMI;
-    if (c == '(')
-        return TOK_LPAREN;
-    if (c == ')')
-        return TOK_RPAREN;
-    if (c == '{')
-        return TOK_LBRACE;
-    if (c == '}')
-        return TOK_RBRACE;
-    if (c == ',')
-        return TOK_COMMA;
-    return TOK_EOF;
-}
-
 static int push_token(lexer_t *lexer, token_type_t type, const char *value)
 {
     token_t *token_struct = token_create(type, value);
@@ -113,7 +62,7 @@ static int lexer_read_number(lexer_t *lexer, const char **input)
     token = strndup(start, len);
     if (!token)
         return ERROR;
-    result = push_token(lexer, TOK_INT, token);
+    result = push_token(lexer, TOK_NUMBER, token);
     free(token);
     return result;
 }
@@ -148,6 +97,23 @@ static int dispatch_token(lexer_t *lexer, const char **input)
     return ERROR;
 }
 
+static void skip_line_comment(const char **input)
+{
+    while (**input && **input != '\n')
+        (*input)++;
+    if (**input == '\n')
+        (*input)++;
+}
+
+static void skip_block_comment(const char **input)
+{
+    while (**input && !(**input == '*' && *(*input + 1) == '/'))
+        (*input)++;
+    if (**input) {
+        (*input) += 2;
+    }
+}
+
 int lexer_tokenize(lexer_t *lexer, const char *input)
 {
     if (!lexer || !input)
@@ -155,6 +121,14 @@ int lexer_tokenize(lexer_t *lexer, const char *input)
     while (*input) {
         if (isspace(*input)) {
             input++;
+            continue;
+        }
+        if ((*input == '/' && *(input + 1) == '/') || *input == '#') {
+            skip_line_comment(&input);
+            continue;
+        }
+        if (*input == '/' && *(input + 1) == '*') {
+            skip_block_comment(&input);
             continue;
         }
         if (dispatch_token(lexer, &input) == ERROR)

@@ -11,6 +11,7 @@
 typedef enum token_type_e {
     // data types
     TOK_INT,
+    TOK_NUMBER,
 
     // keywords
     TOK_RETURN,
@@ -37,7 +38,7 @@ typedef enum token_type_e {
     TOK_LBRACE,     // {
     TOK_RBRACE,     // }
     TOK_COMMA,      // ,
-    TOK_EOF
+    TOK_EOF,
 } token_type_t;
 
 typedef struct token_s {
@@ -47,5 +48,9 @@ typedef struct token_s {
 
 token_t *token_create(token_type_t type, const char *value);
 void token_destroy(token_t *token);
+
+token_type_t get_keyword_type(const char *keyword);
+token_type_t get_operator_type(char c);
+token_type_t get_punctuation_type(char c);
 
 #endif /* TOKEN_H */

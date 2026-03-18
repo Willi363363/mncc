@@ -41,4 +41,6 @@ int gen_expression(gen_t *gen, node_t *node);
 int gen_value(gen_t *gen, node_t *node);
 int gen_operator(gen_t *gen, node_t *node);
 
+const char *gen_get_register(int i);
+
 #endif /* !GEN_H */

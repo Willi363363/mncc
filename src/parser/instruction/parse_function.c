@@ -64,24 +64,20 @@ static node_t *handle_function_parameter(parser_t *parser, node_t *node)
 
 static int handle_function_parameters(parser_t *parser, node_t *node)
 {
-    if (!parser_match(parser, TOK_LPAREN)) {
-        node_destroy(node);
-        get_error(EPAR, "expected '(', got '%s'", parser_peek(parser)->value);
-        return EPAR;
-    }
+    if (!parser_match(parser, TOK_LPAREN))
+        return get_error(EPAR,
+            "expected '(', got '%s'",
+            parser_peek(parser)->value);
     parser->cursor++;
     while (!parser_match(parser, TOK_RPAREN)) {
         if (handle_function_parameter(parser, node) == NULL)
             return ERROR;
         if (parser_peek(parser)->type == TOK_RPAREN)
             break;
-        if (!parser_match(parser, TOK_COMMA)) {
-            node_destroy(node);
-            get_error(EPAR,
+        if (!parser_match(parser, TOK_COMMA))
+            return get_error(EPAR,
                 "expected ',' or ')', got '%s'",
                 parser_peek(parser)->value);
-            return EPAR;
-        }
         parser->cursor++;
     }
     parser->cursor++;
@@ -118,11 +114,8 @@ node_t *parse_function(parser_t *parser)
         return NULL;
     if (handle_function_name(parser, node) != SUCCESS)
         return NULL;
-    if (handle_function_parameters(parser, node) != SUCCESS)
-        return NULL;
-    if (parser_peek(parser)->type != TOK_LBRACE) {
+    if (handle_function_parameters(parser, node) != SUCCESS){
         node_destroy(node);
-        get_error(EPAR, "expected '{', got '%s'", parser_peek(parser)->value);
         return NULL;
     }
     if (handle_body(parser, node) != SUCCESS)

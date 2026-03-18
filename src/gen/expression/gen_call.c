@@ -9,22 +9,9 @@
 #include "main.h"
 #include "parser/node.h"
 
-static const char *REGISTERS[12] = {"rax",
-    "rbx",
-    "rcx",
-    "rdx",
-    "r8",
-    "r9",
-    "r10",
-    "r11",
-    "r12",
-    "r13",
-    "r14",
-    "r15"};
-
 static int load_arg_to_register(gen_t *gen, node_t *node, int i)
 {
-    const char *reg = REGISTERS[i];
+    const char *reg = gen_get_register(i);
 
     if (gen_expression(gen, node) != SUCCESS)
         return ERROR;

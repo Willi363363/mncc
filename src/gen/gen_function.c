@@ -13,19 +13,6 @@
 #include "parser/node.h"
 #include "utils/utils.h"
 
-static const char *REGISTERS[12] = {"rax",
-    "rbx",
-    "rcx",
-    "rdx",
-    "r8",
-    "r9",
-    "r10",
-    "r11",
-    "r12",
-    "r13",
-    "r14",
-    "r15"};
-
 static variable_t *create_variable(gen_t *gen, char *name)
 {
     variable_t *data = malloc(sizeof(variable_t));
@@ -47,7 +34,7 @@ static void put_arguments_in_stack(gen_t *gen, node_t *node)
     variable_t *var = NULL;
 
     for (int i = 0; i < node->childs->count - 1; i++) {
-        reg = REGISTERS[i];
+        reg = gen_get_register(i);
         arg = node->childs->data[i];
         var = create_variable(gen, arg->name);
         fprintf(gen->out, "    sub rsp, 0x%X\n", var->offset);
@@ -64,10 +51,8 @@ static void gen_function_body(gen_t *gen, node_t *node)
 
     for (int i = 0; i < node->childs->count; i++) {
         child = node->childs->data[i];
-        if (child->type == NODE_BLOCK) {
-            if (gen_instruction(gen, child) != SUCCESS)
-                return;
-        }
+        if (child->type == NODE_BLOCK && gen_instruction(gen, child) != SUCCESS)
+            return;
     }
 }
 

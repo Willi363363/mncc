@@ -45,9 +45,7 @@ node_t *parse_assignment(parser_t *parser)
     }
     if (!parser_match(parser, TOK_EQ)) {
         node_destroy(node);
-        get_error(EPAR,
-            "invalid assignment operator: got '%s'",
-            parser_peek(parser)->value);
+        get_error(EPAR, "expected '=' got '%s'", parser_peek(parser)->value);
         return NULL;
     }
     parser->cursor++;

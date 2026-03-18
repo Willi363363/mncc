@@ -109,9 +109,7 @@ node_t *parse_instruction(parser_t *parser)
     node_t *node = NULL;
 
     if (!token) {
-        get_error(EPAR,
-            "unexpected end of input %s",
-            "expected 'return' or identifier");
+        get_error(EPAR, "could not parse instruction: unexpected end of file");
         return NULL;
     }
     node = get_instruction_node(parser);

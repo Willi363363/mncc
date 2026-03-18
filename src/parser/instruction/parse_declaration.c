@@ -24,12 +24,11 @@ static node_t *handle_empty_declaration(parser_t *parser)
     if (!parser_match(parser, TOK_IDENT)) {
         node_destroy(node);
         get_error(EPAR,
-            "expected variable name identifier, got '%s'",
+            "expected variable, got '%s'",
             parser_peek(parser)->value);
         return NULL;
     }
     node->name = strdup(parser_peek(parser)->value);
-    parser->cursor++;
     if (!node->name) {
         node_destroy(node);
         get_error(ENOMEM, "parser declaration name allocation");
@@ -48,8 +47,10 @@ node_t *parse_declaration(parser_t *parser)
     if (parser_at(parser, parser->cursor + 1)->type == TOK_EQ) {
         node = parse_assignment(parser);
         printf("Parsed assignement with name '%s'\n", node->left->name);
-    } else
+    } else {
         node = handle_empty_declaration(parser);
+        parser->cursor++;
+    }
     if (!node)
         return NULL;
     node->type = NODE_DECLARATION;

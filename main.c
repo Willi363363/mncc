@@ -20,7 +20,7 @@ static int is_not_valid_file(char const *path)
     struct stat s = {0};
 
     if (!path || stat(path, &s) < 0)
-        return get_error(EINP, "file not found",
+        return get_error(EINP, "file not found\n%s",
             "file can't be read or doensn't exist");
     return SUCCESS;
 }

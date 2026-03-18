@@ -8,6 +8,6 @@
 #ifndef UTILS_H_
     #define UTILS_H_
 
-int get_error(int code, const char *message, const char *detail);
+int get_error(int code, const char *message, ...);
 
 #endif /* !UTILS_H_ */

@@ -8,12 +8,13 @@
 #include "main.h"
 #include <stdio.h>
 #include <errno.h>
+#include <stdarg.h>
+#include <string.h>
 
-int get_error(int code, const char *message, const char *detail)
+static void print_error_code(int code)
 {
-    if (code < ELEX || code > EGEN) {
+    if (code < ELEX || code > EGEN)
         perror("Error");
-    }
     if (code == EINP)
         fprintf(stderr, "Implementation error");
     if (code == ELEX)
@@ -22,12 +23,19 @@ int get_error(int code, const char *message, const char *detail)
         fprintf(stderr, "Parser error");
     if (code == EGEN)
         fprintf(stderr, "Generation error");
-    if (message) {
-        fprintf(stderr, ": %s\n", message);
-    } else {
-        fprintf(stderr, "\n");
+}
+
+int get_error(int code, const char *message, ...)
+{
+    va_list args;
+
+    print_error_code(code);
+    if (message && *message) {
+        fprintf(stderr, ": ");
+        va_start(args, message);
+        vfprintf(stderr, message, args);
+        va_end(args);
     }
-    if (detail)
-        fprintf(stderr, "Details : %s\n", detail);
+    fprintf(stderr, "\n");
     return code;
 }

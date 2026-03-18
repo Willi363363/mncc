@@ -18,10 +18,10 @@ typedef enum data_type_e {
 } data_type_t;
 
 typedef enum operator_type_e {
-    OP_DIV,
-    OP_MUL,
-    OP_SUB,
     OP_ADD,
+    OP_SUB,
+    OP_MUL,
+    OP_DIV,
     OP_INVALID
 } operator_type_t;
 

@@ -6,16 +6,15 @@
 */
 
 #include "main.h"
-#include "utils/utils.h"
-#include "lexer/token.h"
-#include "lexer/lexer.h"
-#include <sys/stat.h>
-#include <string.h>
-#include <stdio.h>
-#include <errno.h>
-#include <stdlib.h>
 #include <fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/stat.h>
 #include <unistd.h>
+#include "lexer/lexer.h"
+#include "parser/parser.h"
+#include "utils/utils.h"
 
 static int print_usage(void)
 {
@@ -30,7 +29,8 @@ static int is_not_valid_file(char const *path)
     struct stat s = {0};
 
     if (!path || stat(path, &s) < 0)
-        return get_error(EINP, "file not found\n%s",
+        return get_error(EINP,
+            "file not found\n%s",
             "file can't be read or doensn't exist");
     return SUCCESS;
 }
@@ -56,6 +56,18 @@ static int read_file(const char *path, char **buffer)
     return 0;
 }
 
+static int process_parsing(lexer_t *lexer)
+{
+    parser_t *parser = parser_create(lexer);
+    int result = 0;
+
+    if (!parser)
+        return ERROR;
+    result = parser_run(parser);
+    parser_destroy(parser);
+    return result;
+}
+
 static int process_file(char *path)
 {
     char *buffer = NULL;
@@ -72,6 +84,7 @@ static int process_file(char *path)
         lexer_destroy(lexer);
         return ERROR;
     }
+    process_parsing(lexer);
     lexer_destroy(lexer);
     return SUCCESS;
 }

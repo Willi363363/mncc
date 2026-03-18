@@ -7,5 +7,6 @@ compile_commands.json
 *.d
 mncc
 .cache
-unit_tests
+unit_tests*
 *.txt
+*.gc*

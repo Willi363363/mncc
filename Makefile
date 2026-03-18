@@ -26,7 +26,7 @@ MAIN_OBJ = $(MAIN:.c=.o)
 
 TESTS = unit_tests
 TESTS_SRC = $(shell find tests -name '*.c')
-TESTS_LDFLAGS = -lcriterion
+TESTS_LDFLAGS = -lcriterion --coverage
 
 all: $(NAME)
 

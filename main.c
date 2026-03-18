@@ -7,6 +7,7 @@
 
 #include "main.h"
 #include "utils/utils.h"
+#include "lexer/token.h"
 #include "lexer/lexer.h"
 #include <sys/stat.h>
 #include <string.h>
@@ -61,6 +62,28 @@ static int read_file(const char *path, char **buffer)
     return result;
 }
 
+static int print_lexer(lexer_t *lexer)
+{
+    token_t *token = NULL;
+
+    for (int i = 0; i < lexer->tokens->count; i++) {
+        token = (token_t *)lexer->tokens->data[i];
+        printf("Token %d: Type=%d, Value='%s'\n", i,
+            token->type, token->value ? token->value : "NULL");
+    }
+    return SUCCESS;
+}
+
+static int run_lexer(char *buffer, lexer_t *lexer)
+{
+    if (lexer_tokenize(lexer, buffer) == ERROR) {
+        free(buffer);
+        return ERROR;
+    }
+    free(buffer);
+    return print_lexer(lexer);
+}
+
 static int process_file(char *buffer)
 {
     lexer_t *lexer = NULL;
@@ -72,12 +95,10 @@ static int process_file(char *buffer)
         free(buffer);
         return ERROR;
     }
-    if (lexer_tokenize(lexer, buffer) == ERROR) {
+    if (run_lexer(buffer, lexer) == ERROR) {
         lexer_destroy(lexer);
-        free(buffer);
         return ERROR;
     }
-    free(buffer);
     lexer_destroy(lexer);
     return SUCCESS;
 }

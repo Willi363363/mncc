@@ -33,8 +33,7 @@ int get_error(int code, const char *message, ...)
 
     print_error_code(code);
     if (message && *message) {
-        if (code < ELEX || code > EGEN)
-            fprintf(stderr, ": ");
+        fprintf(stderr, (code < ELEX || code > EGEN) ? "At: " : ": ");
         va_start(args, message);
         vfprintf(stderr, message, args);
         va_end(args);

@@ -7,4 +7,4 @@ RUN cp ./.github/test.c ./test.c
 RUN chmod +x assemble.sh
 
 # Compile and test
-CMD ./mncc ./test.c; ls -l ./a.out
+CMD ./mncc ./test.c;

@@ -9,7 +9,7 @@
 #include <sys/wait.h>
 #include <stdlib.h>
 #include "main.h"
-#include "utils.h"
+#include "utils/utils.h"
 
 int nasm_assemble(char const *path)
 {

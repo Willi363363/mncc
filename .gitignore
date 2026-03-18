@@ -9,4 +9,3 @@ mncc
 .cache
 unit_tests
 *.txt
-test.c

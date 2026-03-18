@@ -14,5 +14,6 @@ typedef struct lexer_s {
 
 lexer_t *lexer_create(void);
 void lexer_destroy(lexer_t *lexer);
+int lexer_tokenize(lexer_t *lexer, const char *input);
 
 #endif /* LEXER_H */

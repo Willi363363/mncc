@@ -13,8 +13,10 @@
 
 static void print_error_code(int code)
 {
-    if (code < ELEX || code > EGEN)
+    if (code < ELEX || code > EGEN) {
+        errno = code;
         perror("Error");
+    }
     if (code == EINP)
         fprintf(stderr, "Implementation error");
     if (code == ELEX)
@@ -31,7 +33,8 @@ int get_error(int code, const char *message, ...)
 
     print_error_code(code);
     if (message && *message) {
-        fprintf(stderr, ": ");
+        if (code < ELEX || code > EGEN)
+            fprintf(stderr, ": ");
         va_start(args, message);
         vfprintf(stderr, message, args);
         va_end(args);

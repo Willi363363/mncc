@@ -11,14 +11,12 @@
 int realloc_array(array_t *array)
 {
     int new_capacity = array->capacity * 2;
-    void **new_data = malloc(sizeof(void *) * new_capacity);
+    void **new_data = calloc(new_capacity, sizeof(void *));
 
     if (new_data == NULL)
         return ERROR;
     for (int i = 0; i < array->count; i++)
         new_data[i] = array->data[i];
-    for (int i = array->count; i < new_capacity; i++)
-        new_data[i] = NULL;
     free(array->data);
     array->data = new_data;
     array->capacity = new_capacity;

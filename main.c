@@ -48,6 +48,8 @@ static int read_file(const char *path, char **buffer)
     *buffer = calloc(s.st_size + 1, sizeof(char));
     if (read(fd, *buffer, s.st_size) < s.st_size) {
         free(*buffer);
+        *buffer = NULL;
+        close(fd);
         return get_error(EINP, "file open");
     }
     close(fd);

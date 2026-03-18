@@ -1,10 +1,24 @@
+/*
+** EPITECH PROJECT, 2026
+** test.c
+** File description:
+** Test file for the MNCC project
+*/
 
-int func()
+#include <stdio.h>
+
+int get_ages_addition()
 {
-    return 32;
+    int william = 18;
+    int alessandro = 18;
+    return william + alessandro;
 }
 
 int main()
 {
-    return 3 + func() * 2;
+    int factor = 0;
+    int diff = 3;
+
+    factor = 2;
+    return diff + get_ages_addition() * factor;
 }

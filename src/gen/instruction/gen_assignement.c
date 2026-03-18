@@ -13,10 +13,10 @@
 
 static int get_offset(gen_t *gen, const char *name)
 {
-    stack_data_t *data = NULL;
+    variable_t *data = NULL;
 
-    for (int i = 0; i < gen->stack->variables->count; i++) {
-        data = gen->stack->variables->data[i];
+    for (int i = 0; i < gen->variables->count; i++) {
+        data = gen->variables->data[i];
         if (strcmp(data->name, name) == 0)
             return data->offset;
     }

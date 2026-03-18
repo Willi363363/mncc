@@ -9,22 +9,6 @@
 #include "gen/gen.h"
 #include "utils/utils.h"
 
-static stack_t *stack_create(void)
-{
-    stack_t *stack = malloc(sizeof(stack_t));
-
-    if (!stack)
-        return NULL;
-    stack->parent = NULL;
-    stack->variables = array_create((array_element_destroy_t)free);
-    if (!stack->variables) {
-        free(stack);
-        get_error(ENOMEM, "code generation stack allocation");
-        return NULL;
-    }
-    return stack;
-}
-
 static FILE *open_file(const char *filename)
 {
     FILE *out = fopen(filename, "w");
@@ -50,10 +34,6 @@ gen_t *gen_create(char *filename, parser_t *parser)
         free(gen);
         return NULL;
     }
-    gen->stack = stack_create();
-    if (!gen->stack) {
-        free(gen);
-        return NULL;
-    }
+    gen->variables = NULL;
     return gen;
 }

@@ -5,11 +5,9 @@
 ** Generation of value nodes to assembly code
 */
 #include <stdio.h>
-#include <string.h>
 #include "gen/gen.h"
 #include "main.h"
 #include "parser/node.h"
-#include "utils/utils.h"
 
 int gen_call(gen_t *gen, node_t *node)
 {
@@ -19,6 +17,7 @@ int gen_call(gen_t *gen, node_t *node)
         fprintf(gen->out, "    push rax\n");
     }
     fprintf(gen->out, "    call %s\n", node->name);
+
     fprintf(gen->out, "    add rsp, 0x%X\n", node->childs->count * 8);
     return SUCCESS;
 }

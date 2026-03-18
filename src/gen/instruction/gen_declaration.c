@@ -15,10 +15,10 @@
 
 static int get_offset(gen_t *gen, const char *name)
 {
-    stack_data_t *data = NULL;
+    variable_t *data = NULL;
 
-    for (int i = 0; i < gen->stack->variables->count; i++) {
-        data = gen->stack->variables->data[i];
+    for (int i = 0; i < gen->variables->count; i++) {
+        data = gen->variables->data[i];
         if (strcmp(data->name, name) == 0)
             return data->offset;
     }
@@ -28,13 +28,13 @@ static int get_offset(gen_t *gen, const char *name)
 
 static int create_variable(gen_t *gen, char *name)
 {
-    stack_data_t *data = malloc(sizeof(stack_data_t));
+    variable_t *data = malloc(sizeof(variable_t));
 
     if (!data)
         return get_error(ENOMEM, "stack variable allocation");
     data->name = strdup(name);
-    data->offset = (gen->stack->variables->count + 1) * 8;
-    array_push(gen->stack->variables, data);
+    data->offset = (gen->variables->count + 1) * 8;
+    array_push(gen->variables, data);
     return SUCCESS;
 }
 

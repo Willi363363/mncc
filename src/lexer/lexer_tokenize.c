@@ -26,6 +26,8 @@ static token_type_t get_keyword_type(const char *keyword)
         return TOK_RETURN;
     if (strcmp(keyword, "int") == 0)
         return TOK_INT;
+    if (strcmp(keyword, "void") == 0)
+        return TOK_VOID;
     return TOK_IDENT;
 }
 

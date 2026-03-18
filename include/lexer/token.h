@@ -18,6 +18,7 @@ typedef enum token_type_e {
     TOK_ELSE,
     TOK_WHILE,
     TOK_FOR,
+    TOK_VOID,
 
     // identifiers and literals
     TOK_IDENT,

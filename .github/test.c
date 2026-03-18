@@ -4,15 +4,14 @@
 ** File description:
 ** Test file for the MNCC project
 */
-
 #include <stdio.h>
 
-int add(int a, int b)
+int add(int a, int b, int c)
 {
-    return a + b;
+    return a + b + c;
 }
 
 int main()
 {
-    return add(15, 8);
+    return (3 + add(15, 8, (((((4 + 5))))))) * 3;
 }

@@ -49,10 +49,15 @@ static int get_operator_offset(parser_t *parser, int size, operator_type_t op)
     int cursor = parser->cursor;
     token_type_t type = get_operator_token_type(op);
     token_t *token = NULL;
+    int depth = 0;
 
     for (int offset = 0; offset < size; offset++) {
         token = parser_peek(parser);
-        if (token->type == type) {
+        if (token->type == TOK_LPAREN)
+            depth++;
+        if (token->type == TOK_RPAREN)
+            depth--;
+        if (token->type == type && depth == 0) {
             parser->cursor = cursor;
             return offset;
         }
@@ -110,8 +115,7 @@ node_t *parse_operator(parser_t *parser, int size)
             return create_operator_node(parser, offset);
     }
     get_error(EPAR,
-        "invalid operator expression",
-        "expected an operator but got '%s'",
+        "expected an operator, got '%s'",
         parser_peek(parser) ? parser_peek(parser)->value : "end of input");
     return NULL;
 }

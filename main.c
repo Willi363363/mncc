@@ -14,6 +14,8 @@
 #include <stdio.h>
 #include <errno.h>
 #include <stdlib.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 static int print_usage(void)
 {
@@ -33,33 +35,23 @@ static int is_not_valid_file(char const *path)
     return SUCCESS;
 }
 
-static int read_file_content(FILE *file, char **buffer, long length)
-{
-    *buffer = calloc(length + 1, sizeof(char));
-    if (!*buffer)
-        return get_error(ENOMEM, "file buffer allocation");
-    if (fread(*buffer, 1, length, file) != (size_t)length) {
-        free(*buffer);
-        return get_error(EINP, "file read");
-    }
-    (*buffer)[length] = '\0';
-    return SUCCESS;
-}
-
 static int read_file(const char *path, char **buffer)
 {
-    FILE *file = fopen(path, "r");
-    long length = 0;
-    int result = 0;
+    struct stat s = {0};
+    int fd = 0;
 
-    if (!file)
+    if (stat(path, &s) < 0)
         return get_error(EINP, "file open");
-    fseek(file, 0, SEEK_END);
-    length = ftell(file);
-    fseek(file, 0, SEEK_SET);
-    result = read_file_content(file, buffer, length);
-    fclose(file);
-    return result;
+    fd = open(path, O_RDONLY);
+    if (fd < 0)
+        return get_error(EINP, "file open"); 
+    *buffer = calloc(s.st_size + 1, sizeof(char));
+    if (read(fd, *buffer, s.st_size) < s.st_size) {
+        free(*buffer);
+        return get_error(EINP, "file open"); 
+    }
+    close(fd);
+    return 0;
 }
 
 static int print_lexer(lexer_t *lexer)

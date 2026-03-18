@@ -9,5 +9,6 @@
     #define UTILS_H_
 
 int get_error(int code, const char *message, ...);
+int nasm_assemble(char const *path);
 
 #endif /* !UTILS_H_ */

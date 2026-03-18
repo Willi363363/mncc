@@ -5,6 +5,7 @@
 ** tokens parsing :
 */
 #include <errno.h>
+#include <stdio.h>
 #include <string.h>
 #include "lexer/token.h"
 #include "main.h"
@@ -33,7 +34,8 @@ static int handle_function_name(parser_t *parser, node_t *node)
             parser_peek(parser)->value);
         return EPAR;
     }
-    node->name = strdup(parser_at(parser, parser->cursor - 1)->value);
+    node->name = strdup(parser_peek(parser)->value);
+    parser->cursor++;
     if (!node->name) {
         node_destroy(node);
         get_error(ENOMEM, "parser function name allocation");
@@ -67,6 +69,7 @@ static int handle_function_parameters(parser_t *parser, node_t *node)
         get_error(EPAR, "expected '(', got '%s'", parser_peek(parser)->value);
         return EPAR;
     }
+    parser->cursor++;
     while (!parser_match(parser, TOK_RPAREN)) {
         if (handle_function_parameter(parser, node) == NULL)
             return ERROR;
@@ -79,7 +82,9 @@ static int handle_function_parameters(parser_t *parser, node_t *node)
                 parser_peek(parser)->value);
             return EPAR;
         }
+        parser->cursor++;
     }
+    parser->cursor++;
     return SUCCESS;
 }
 

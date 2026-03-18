@@ -14,8 +14,9 @@
 #include "utils/array.h"
 #include "utils/utils.h"
 
-static node_t *create_const_node(token_t *token)
+static node_t *create_const_node(parser_t *parser)
 {
+    token_t *token = parser_peek(parser);
     node_t *node = node_create(NODE_CONST);
 
     if (!node) {
@@ -23,11 +24,13 @@ static node_t *create_const_node(token_t *token)
         return NULL;
     }
     node->value = atoi(token->value);
+    parser->cursor++;
     return node;
 }
 
-static node_t *create_var_node(token_t *token)
+static node_t *create_var_node(parser_t *parser)
 {
+    token_t *token = parser_peek(parser);
     node_t *node = node_create(NODE_VAR);
 
     if (!node) {
@@ -35,6 +38,7 @@ static node_t *create_var_node(token_t *token)
         return NULL;
     }
     node->name = strdup(token->value);
+    parser->cursor++;
     if (!node->name) {
         node_destroy(node);
         get_error(ENOMEM, NULL, "parser var name allocation");
@@ -49,12 +53,12 @@ static node_t *get_value_node(parser_t *parser)
     node_t *node = NULL;
 
     if (token->type == TOK_NUMBER)
-        node = create_const_node(token);
+        node = create_const_node(parser);
     if (token->type == TOK_IDENT &&
         parser_at(parser, parser->cursor + 1)->type == TOK_LPAREN)
         node = parse_call(parser);
     else if (token->type == TOK_IDENT)
-        node = create_var_node(token);
+        node = create_var_node(parser);
     if (!node) {
         get_error(EPAR,
             "expected a number or an identifier, got '%s'",
@@ -77,6 +81,5 @@ node_t *parse_value(parser_t *parser)
     node = get_value_node(parser);
     if (!node)
         return NULL;
-    parser_next(parser);
     return node;
 }

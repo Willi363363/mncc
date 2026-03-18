@@ -7,18 +7,12 @@
 
 #include <stdio.h>
 
-int get_ages_addition()
+int add(int a, int b)
 {
-    int william = 18;
-    int alessandro = 18;
-    return william + alessandro;
+    return a + b;
 }
 
 int main()
 {
-    int factor = 0;
-    int diff = 3;
-
-    factor = 2;
-    return diff + get_ages_addition() * factor;
+    return add(15, 8);
 }

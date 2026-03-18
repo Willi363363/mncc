@@ -23,7 +23,8 @@ static char *handle_call_name(parser_t *parser, node_t *node)
             parser_peek(parser)->value);
         return NULL;
     }
-    name = strdup(parser_at(parser, parser->cursor - 1)->value);
+    name = strdup(parser_peek(parser)->value);
+    parser->cursor++;
     if (!name) {
         node_destroy(node);
         get_error(ENOMEM, "parser call name allocation");
@@ -49,22 +50,25 @@ static bool handle_call_argument(parser_t *parser, node_t *node)
     return true;
 }
 
-static bool handle_call_arguments(parser_t *parser, node_t *node)
+static int handle_call_arguments(parser_t *parser, node_t *node)
 {
     if (!parser_match(parser, TOK_LPAREN)) {
         node_destroy(node);
-        get_error(EPAR, "expected '(', got '%s'", parser_peek(parser)->value);
-        return false;
+        return get_error(EPAR,
+            "expected '(', got '%s'",
+            parser_peek(parser)->value);
     }
-    while (parser_peek(parser)->type != TOK_RPAREN) {
+    parser->cursor++;
+    while (!parser_match(parser, TOK_RPAREN)) {
         if (!handle_call_argument(parser, node)) {
             node_destroy(node);
-            return false;
+            return EPAR;
         }
-        if (parser_peek(parser)->type == TOK_COMMA)
-            parser_next(parser);
+        if (parser_match(parser, TOK_COMMA))
+            parser->cursor++;
     }
-    return true;
+    parser->cursor++;
+    return SUCCESS;
 }
 
 node_t *parse_call(parser_t *parser)
@@ -78,7 +82,7 @@ node_t *parse_call(parser_t *parser)
     node->name = handle_call_name(parser, node);
     if (!node->name)
         return NULL;
-    if (!handle_call_arguments(parser, node))
+    if (handle_call_arguments(parser, node) != SUCCESS)
         return NULL;
     return node;
 }

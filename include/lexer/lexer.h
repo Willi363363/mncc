@@ -8,6 +8,7 @@
     #define LEXER_H
     #include "utils/array.h"
 
+
 typedef struct lexer_s {
     array_t *tokens;
 } lexer_t;

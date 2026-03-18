@@ -28,7 +28,8 @@ static node_t *handle_empty_declaration(parser_t *parser)
             parser_peek(parser)->value);
         return NULL;
     }
-    node->name = strdup(parser_at(parser, parser->cursor - 1)->value);
+    node->name = strdup(parser_peek(parser)->value);
+    parser->cursor++;
     if (!node->name) {
         node_destroy(node);
         get_error(ENOMEM, "parser declaration name allocation");

@@ -50,6 +50,7 @@ node_t *parse_assignment(parser_t *parser)
             parser_peek(parser)->value);
         return NULL;
     }
+    parser->cursor++;
     if (parse_rhs(parser, node) != SUCCESS) {
         node_destroy(node);
         return NULL;

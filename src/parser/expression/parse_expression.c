@@ -79,15 +79,9 @@ node_t *parse_sized_expression(parser_t *parser, int size)
     node_t *node = NULL;
     bool is_operator = contains_operator(parser, size);
 
-    if (is_operator) {
+    if (is_operator)
         node = parse_operator(parser, size);
-        if (!node) {
-            get_error(EPAR, "invalid operator in expression '%s'",
-                parser_peek(parser) ? parser_peek(parser)->value
-                : "end of input");
-            return NULL;
-        }
-    } else
+    else
         node = parse_value(parser);
     if (!node) {
         get_error(EPAR,

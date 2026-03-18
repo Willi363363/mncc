@@ -4,6 +4,7 @@
 ** File description:
 ** Instruction parsing functions
 */
+#include <stdio.h>
 #include "lexer/token.h"
 #include "main.h"
 #include "parser/node.h"
@@ -118,8 +119,11 @@ node_t *parse_instruction(parser_t *parser)
         return NULL;
     if (!parser_match(parser, TOK_SEMI)) {
         node_destroy(node);
-        get_error(EPAR, "missing semicolon");
+        get_error(EPAR,
+            "expected semicolon, got '%s'",
+            parser_peek(parser)->value);
         return NULL;
     }
+    parser->cursor++;
     return node;
 }

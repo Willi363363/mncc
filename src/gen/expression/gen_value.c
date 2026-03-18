@@ -29,7 +29,7 @@ int gen_value(gen_t *gen, node_t *node)
     int offset = 0;
 
     if (node->type == NODE_CONST) {
-        fprintf(gen->out, "    mov rax, %d\n", node->value);
+        fprintf(gen->out, "    mov rax, 0x%X\n", node->value);
         return SUCCESS;
     }
     if (node->type == NODE_VAR) {
@@ -37,7 +37,7 @@ int gen_value(gen_t *gen, node_t *node)
         if (offset < 0)
             return ERROR;
         if (offset > 0)
-            fprintf(gen->out, "    mov rax, [rbp - %d]\n", offset);
+            fprintf(gen->out, "    mov rax, [rbp - 0x%X]\n", offset);
         else
             fprintf(gen->out, "    mov rax, [rbp]\n");
     }

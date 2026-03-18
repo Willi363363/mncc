@@ -7,10 +7,69 @@
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "gen/gen.h"
 #include "main.h"
 #include "parser/node.h"
 #include "utils/utils.h"
+
+static const char *REGISTERS[12] = {"rax",
+    "rbx",
+    "rcx",
+    "rdx",
+    "r8",
+    "r9",
+    "r10",
+    "r11",
+    "r12",
+    "r13",
+    "r14",
+    "r15"};
+
+static variable_t *create_variable(gen_t *gen, char *name)
+{
+    variable_t *data = malloc(sizeof(variable_t));
+
+    if (!data) {
+        get_error(ENOMEM, "stack variable allocation");
+        return NULL;
+    }
+    data->name = strdup(name);
+    data->offset = (gen->variables->count + 1) * 8;
+    array_push(gen->variables, data);
+    return data;
+}
+
+static void put_arguments_in_stack(gen_t *gen, node_t *node)
+{
+    const char *reg = NULL;
+    node_t *arg = NULL;
+    variable_t *var = NULL;
+
+    for (int i = 0; i < node->childs->count - 1; i++) {
+        reg = REGISTERS[i];
+        arg = node->childs->data[i];
+        var = create_variable(gen, arg->name);
+        fprintf(gen->out, "    sub rsp, 0x%X\n", var->offset);
+        if (var->offset > 0)
+            fprintf(gen->out, "    mov [rbp - 0x%X], %s\n", var->offset, reg);
+        else
+            fprintf(gen->out, "    mov [rbp], %s\n", reg);
+    }
+}
+
+static void gen_function_body(gen_t *gen, node_t *node)
+{
+    node_t *child = NULL;
+
+    for (int i = 0; i < node->childs->count; i++) {
+        child = node->childs->data[i];
+        if (child->type == NODE_BLOCK) {
+            if (gen_instruction(gen, child) != SUCCESS)
+                return;
+        }
+    }
+}
 
 int gen_function(gen_t *gen, node_t *node)
 {
@@ -21,7 +80,8 @@ int gen_function(gen_t *gen, node_t *node)
         return get_error(ENOMEM, "generator function variables allocation");
     fprintf(gen->out, "%s:\n", node->name);
     fprintf(gen->out, "    push rbp\n    mov rbp, rsp\n");
-    gen_block(gen, node->childs->data[0]);
+    put_arguments_in_stack(gen, node);
+    gen_function_body(gen, node);
     fprintf(gen->out, "    leave\n    ret\n");
     fprintf(gen->out, "\n");
     for (int i = 0; i < gen->variables->count; i++) {

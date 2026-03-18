@@ -43,7 +43,8 @@ node_t *parse_block(parser_t *parser)
             parser_peek(parser)->value);
         return NULL;
     }
-    while (parser_peek(parser)->type != TOK_RBRACE) {
+    parser->cursor++;
+    while (!parser_match(parser, TOK_RBRACE)) {
         if (handle_instruction(parser, node) != SUCCESS)
             return NULL;
     }

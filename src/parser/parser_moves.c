@@ -31,9 +31,5 @@ bool parser_match(parser_t *p, token_type_t type)
 {
     token_t *tok = parser_peek(p);
 
-    if (tok && tok->type == type) {
-        p->cursor++;
-        return true;
-    }
-    return false;
+    return tok && tok->type == type;
 }

@@ -25,6 +25,11 @@ jobs:
       run: make CICD=1 re
     - name: check binary
       run: ls -l ./mncc
+    - name: Discord notification
+      uses: sarisia/actions-status-discord@v1
+      if: always()
+      with:
+        webhook: ${{ secrets.DISCORD_WEBHOOK }}
 
   cs-build:
 
@@ -39,6 +44,11 @@ jobs:
       run: docker build . -t cs-test --file Dockerfile --tag my-image-name:$(date +%s)
     - name: Run basic command
       run : docker run cs-test:latest
+    - name: Discord notification
+      uses: sarisia/actions-status-discord@v1
+      if: always()
+      with:
+        webhook: ${{ secrets.DISCORD_WEBHOOK }}
   
   coverage-build:
 
@@ -53,6 +63,11 @@ jobs:
       run: docker build . -t coverage-test --file Dockerfile --tag my-image-name:$(date +%s)
     - name: Run basic command
       run : docker run coverage-test:latest
+    - name: Discord notification
+      uses: sarisia/actions-status-discord@v1
+      if: always()
+      with:
+        webhook: ${{ secrets.DISCORD_WEBHOOK }}
 
   valgrind-build:
 
@@ -73,3 +88,8 @@ jobs:
       run: valgrind --leak-check=full --show-leak-kinds=all ./mncc ./main.c
     - name: clean
       run: make fclean
+    - name: Discord notification
+      uses: sarisia/actions-status-discord@v1
+      if: always()
+      with:
+        webhook: ${{ secrets.DISCORD_WEBHOOK }}

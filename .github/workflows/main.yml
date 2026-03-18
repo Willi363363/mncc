@@ -8,10 +8,27 @@ on:
 
 jobs:
 
-  basic-build:
-
+  check-skip:
     runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, 'ci-skip')"
+    outputs:
+      skip: ${{ steps.check.outputs.skip }}
+    steps:
+    - uses: actions/checkout@v6
+      with:
+        fetch-depth: 0
+    - name: Check commit message for ci-skip
+      id: check
+      run: |
+        if git log -1 --pretty=%B | grep -q "ci-skip"; then
+          echo "skip=true" >> $GITHUB_OUTPUT
+        else
+          echo "skip=false" >> $GITHUB_OUTPUT
+        fi
+
+  basic-build:
+    needs: check-skip
+    runs-on: ubuntu-latest
+    if: "needs.check-skip.outputs.skip != 'true'"
 
     steps:
     - uses: actions/checkout@v6
@@ -32,9 +49,9 @@ jobs:
         webhook: ${{ secrets.DISCORD_WEBHOOK }}
 
   cs-build:
-
+    needs: check-skip
     runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, 'ci-skip')"
+    if: "needs.check-skip.outputs.skip != 'true'"
 
     steps:
     - uses: actions/checkout@v6
@@ -51,9 +68,9 @@ jobs:
         webhook: ${{ secrets.DISCORD_WEBHOOK }}
   
   coverage-build:
-
+    needs: check-skip
     runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, 'ci-skip')"
+    if: "needs.check-skip.outputs.skip != 'true'"
 
     steps:
     - uses: actions/checkout@v6
@@ -70,9 +87,9 @@ jobs:
         webhook: ${{ secrets.DISCORD_WEBHOOK }}
 
   valgrind-build:
-
+    needs: check-skip
     runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, 'ci-skip')"
+    if: "needs.check-skip.outputs.skip != 'true'"
     
     steps:
     - uses: actions/checkout@v6

@@ -20,7 +20,7 @@ int gen_run(gen_t *gen)
         if (node->type == NODE_FUNCTION && gen_function(gen, node) != SUCCESS)
             return ERROR;
         if (node->type != NODE_FUNCTION) {
-            get_error(EPAR,
+            get_error(EGEN,
                 "unsupported node type in global scope: '%s'",
                 node->name);
             return ERROR;

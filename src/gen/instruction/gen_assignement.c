@@ -20,18 +20,18 @@ static int get_offset(gen_t *gen, const char *name)
         if (strcmp(data->name, name) == 0)
             return data->offset;
     }
-    get_error(EPAR, "variable '%s' not found in stack", name);
+    get_error(EGEN, "variable '%s' not found in stack", name);
     return -1;
 }
 
 int gen_assignement(gen_t *gen, node_t *node)
 {
-    int offset = get_offset(gen, node->name);
+    int offset = get_offset(gen, node->left->name);
 
     if (offset < 0)
         return ERROR;
-    if (gen_expression(gen, node->childs->data[0]) != SUCCESS)
+    if (gen_expression(gen, node->right) != SUCCESS)
         return ERROR;
-    fprintf(gen->out, "    mov [rbp - %d], rax\n", offset);
+    fprintf(gen->out, "    mov [rbp - 0x%X], rax\n", offset);
     return SUCCESS;
 }

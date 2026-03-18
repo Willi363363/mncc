@@ -5,6 +5,7 @@
 ** Assignment instruction parsing function with static helpers
 */
 #include <errno.h>
+#include <stdio.h>
 #include "lexer/token.h"
 #include "main.h"
 #include "parser/node.h"
@@ -18,11 +19,6 @@ static int parse_lhs(parser_t *parser, node_t *assign_node)
 
     if (!lhs)
         return get_error(ENOMEM, "parser assignment node allocation");
-    if (lhs->type != NODE_VAR) {
-        node_destroy(lhs);
-        return get_error(EPAR,
-            "invalid assignment left-hand side: expected variable");
-    }
     assign_node->left = lhs;
     return SUCCESS;
 }
@@ -33,7 +29,7 @@ static int parse_rhs(parser_t *parser, node_t *assign_node)
 
     if (!rhs)
         return get_error(ENOMEM, "parser assignment node allocation");
-    assign_node->left = rhs;
+    assign_node->right = rhs;
     return SUCCESS;
 }
 

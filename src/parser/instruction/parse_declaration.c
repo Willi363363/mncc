@@ -5,6 +5,7 @@
 ** Assignment instruction parsing function with static helpers
 */
 #include <errno.h>
+#include <stdio.h>
 #include <string.h>
 #include "lexer/token.h"
 #include "main.h"
@@ -43,9 +44,10 @@ node_t *parse_declaration(parser_t *parser)
 
     if (type == DATA_INVALID)
         return NULL;
-    if (parser_at(parser, parser->cursor + 1)->type == TOK_EQ)
+    if (parser_at(parser, parser->cursor + 1)->type == TOK_EQ) {
         node = parse_assignment(parser);
-    else
+        printf("Parsed assignement with name '%s'\n", node->left->name);
+    } else
         node = handle_empty_declaration(parser);
     if (!node)
         return NULL;

@@ -51,7 +51,9 @@ static node_t *get_value_node(parser_t *parser)
     if (token->type == TOK_NUMBER)
         node = create_const_node(token);
     if (token->type == TOK_IDENT &&
-        parser_at(parser, parser->cursor + 1)->type == TOK_EQ)
+        parser_at(parser, parser->cursor + 1)->type == TOK_LPAREN)
+        node = parse_call(parser);
+    else if (token->type == TOK_IDENT)
         node = create_var_node(token);
     if (!node) {
         get_error(EPAR,

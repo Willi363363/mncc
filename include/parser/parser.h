@@ -38,6 +38,7 @@ node_t *parse_assignment(parser_t *parser);
 node_t *parse_function(parser_t *parser);
 node_t *parse_declaration(parser_t *parser);
 node_t *parse_block(parser_t *parser);
+node_t *parse_call(parser_t *parser);
 
 // expression
 node_t *parse_expression(parser_t *parser);

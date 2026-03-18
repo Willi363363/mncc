@@ -31,13 +31,18 @@ int gen_operator(gen_t *gen, node_t *node)
     char *op_str = get_operator_str(node->op);
 
     if (!op_str) {
-        get_error(EPAR, "invalid operator in code generation");
+        get_error(EGEN, "invalid operator in code generation");
         return ERROR;
     }
-    gen_expression(gen, node->left);
-    fprintf(gen->out, "    push rax\n");
     gen_expression(gen, node->right);
+    fprintf(gen->out, "    push rax\n");
+    gen_expression(gen, node->left);
     fprintf(gen->out, "    pop rbx\n");
+    if (node->op == OP_DIV) {
+        fprintf(gen->out, "    xor rdx, rdx\n");
+        fprintf(gen->out, "    div rbx\n");
+        return SUCCESS;
+    }
     fprintf(gen->out, "    %s rax, rbx\n", op_str);
     return SUCCESS;
 }

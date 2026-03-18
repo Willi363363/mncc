@@ -4,6 +4,7 @@
 ** File description:
 ** Expression parsing function
 */
+#include <stdio.h>
 #include "lexer/token.h"
 #include "main.h"
 #include "parser/node.h"
@@ -51,6 +52,7 @@ node_t *parse_sized_expression(parser_t *parser, int size)
 {
     node_t *node = NULL;
 
+    printf("Parsing expression of size %d\n", size);
     if (size == 1)
         node = parse_value(parser);
     else

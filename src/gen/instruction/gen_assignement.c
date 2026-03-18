@@ -33,5 +33,5 @@ int gen_assignement(gen_t *gen, node_t *node)
     if (gen_expression(gen, node->childs->data[0]) != SUCCESS)
         return ERROR;
     fprintf(gen->out, "    mov [rbp - %d], rax\n", offset);
-    return SUCCESS;    
+    return SUCCESS;
 }

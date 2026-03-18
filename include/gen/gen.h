@@ -9,7 +9,7 @@
     #define GEN_H
     #include <stdio.h>
     #include "parser/parser.h"
-#include "utils/array.h"
+    #include "utils/array.h"
 
 typedef struct stack_data_s {
     char *name;
@@ -28,6 +28,7 @@ typedef struct gen_s {
 } gen_t;
 
 gen_t *gen_create(char *filename, parser_t *parser);
+int gen_run(gen_t *gen);
 void gen_destroy(gen_t *gen);
 int gen_header(gen_t *gen);
 int gen_function(gen_t *gen, node_t *node);

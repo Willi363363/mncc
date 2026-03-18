@@ -20,7 +20,7 @@
 static int print_usage(void)
 {
     if (printf("USAGE\n\tmncc [path]\n\nDESCRIPTION\n\tpath\tmust "
-               "have a main() function\n") < 0)
+            "have a main() function\n") < 0)
         return get_error(EINP, "usage print");
     return SUCCESS;
 }
@@ -57,21 +57,19 @@ static int read_file(const char *path, char **buffer)
     return 0;
 }
 
-static int process_generation(char *filename, parser_t *parser)
+static int process_generation(parser_t *parser)
 {
-    gen_t *gen = gen_create(filename, parser);
+    gen_t *gen = gen_create("a.nasm", parser);
     int result = SUCCESS;
 
     if (!gen)
         return ERROR;
-    result = gen_header(gen);
-    if (result == SUCCESS)
-        result = gen_run(gen);
+    result = gen_run(gen);
     gen_destroy(gen);
-    return SUCCESS;
+    return result;
 }
 
-static int process_parsing(char *filename, lexer_t *lexer)
+static int process_parsing(lexer_t *lexer)
 {
     parser_t *parser = parser_create(lexer);
     int result = SUCCESS;
@@ -80,7 +78,7 @@ static int process_parsing(char *filename, lexer_t *lexer)
         return ERROR;
     result = parser_run(parser);
     if (result == SUCCESS)
-        result = process_generation(filename, parser);
+        result = process_generation(parser);
     parser_destroy(parser);
     return result;
 }
@@ -101,7 +99,7 @@ static int process_file(char *path)
         lexer_destroy(lexer);
         return ERROR;
     }
-    process_parsing(path, lexer);
+    process_parsing(lexer);
     lexer_destroy(lexer);
     return SUCCESS;
 }

@@ -10,6 +10,7 @@
 
 int gen_header(gen_t *gen)
 {
+    printf("header\n");
     if (fprintf(gen->out, "section .text\n") < 0)
         return ERROR;
     if (fprintf(gen->out, "\t\tglobal _start\n\n") < 0)

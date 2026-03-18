@@ -56,71 +56,73 @@ The parser reads tokens and builds an Abstract Syntax Tree (AST). Uses recursive
 
 ### AST Node Types
 ```c
-typedef enum {
-    NODE_NUMBER,      // Literal integer
-    NODE_VAR,         // Variable reference
-    NODE_ASSIGN,      // Assignment: a = expr
-    NODE_OP_ADD,      // Binary: expr + expr
-    NODE_OP_SUB,      // Binary: expr - expr
-    NODE_OP_MUL,      // Binary: expr * expr
-    NODE_OP_DIV,      // Binary: expr / expr
-    NODE_OP_CMP,      // Comparison: <, >, <=, >=, ==, !=
-    NODE_FUNC_CALL,   // Function call: func(args)
-    NODE_FUNC_DEF,    // Function definition
-    NODE_BLOCK,       // Block: { statements }
-    NODE_RETURN,      // Return statement
-    NODE_DECL,        // Variable declaration: int x;
-} NodeType;
+typedef enum node_type_e {
+    // Instructions
+    NODE_FUNCTION,      // Function definition
+    NODE_BLOCK,         // Block of statements
+    NODE_ASSIGN,        // Assignment: var = expr
+    NODE_RETURN,        // Return statement
+
+    // Values (Interpretable)
+    NODE_CONST,         // Constant literal
+    NODE_VAR,           // Variable reference
+    NODE_OPERATOR,      // Binary operation: expr op expr
+    NODE_CALL           // Function call: func(args)
+} node_type_t;
+```
+
+### Operator Types
+```c
+typedef enum operator_type_e {
+    OP_ADD,    // +
+    OP_SUB,    // -
+    OP_MUL,    // *
+    OP_DIV     // /
+} operator_type_t;
 ```
 
 ### AST Node Structure
 ```c
-typedef struct Node {
-    NodeType type;
+typedef struct node_s {
+    node_type_t type;
     
-    // For binary operations
-    struct Node *left;
-    struct Node *right;
+    // For binary operations (NODE_OPERATOR, NODE_ASSIGN)
+    struct node_s *left;
+    struct node_s *right;
     
     // For values
-    int value;              // Integer literal value
-    char *name;             // Variable/function name
+    int value;              // For NODE_CONST
+    char *name;             // For NODE_VAR / NODE_FUNCTION / NODE_CALL
+    operator_type_t op;     // For NODE_OPERATOR
     
-    // For function def / calls
-    struct Node **args;     // Argument list
-    int arg_count;
-    struct Node *body;      // Function body (for NODE_FUNC_DEF)
-    
-    // For blocks
-    struct Node **statements;
-    int stmt_count;
-} Node;
+    // For compound structures
+    array_t *childs;        // For NODE_BLOCK, NODE_FUNCTION, NODE_CALL, NODE_RETURN
+} node_t;
 ```
 
 ### Parsing Strategy: Recursive Descent
 
 ```
 parse_program()
-  └─ parse_function_def()
+  └─ {parse_function_def()}
        └─ parse_block()
-            └─ parse_statement()
-                 ├─ parse_return()
-                 ├─ parse_declaration()
-                 └─ parse_assignment()
+            └─ {parse_statement()}
+                 ├─ parse_assignment()
+                 └─ parse_return()
 ```
 
-Example: Parsing `a = 3 + 2;`
+Example: Parsing `result = a + b;`
 
-1. Parser sees `TOK_IDENT(a)`
+1. Parser sees `TOK_IDENT(result)`
 2. Peeks ahead, sees `TOK_EQ`
 3. Calls `parse_assignment()`
-4. Left side: `a` (NODE_VAR)
+4. Left side: `result` (NODE_VAR with name="result")
 5. Right side: recursively parses expression
-   - Sees `TOK_NUMBER(3)` → NODE_NUMBER
+   - Sees `TOK_IDENT(a)` → NODE_VAR
    - Sees `TOK_PLUS`
-   - Sees `TOK_NUMBER(2)` → NODE_NUMBER
-   - Creates `NODE_OP_ADD` with left=3, right=2
-6. Creates `NODE_ASSIGN` with left=`a`, right=`(3+2)`
+   - Sees `TOK_IDENT(b)` → NODE_VAR
+   - Creates `NODE_OPERATOR` with left=a, right=b, op=OP_ADD
+6. Creates `NODE_ASSIGN` with left=result, right=(a+b)
 
 ## Stage 3: Semantic Analysis (Optional)
 
@@ -141,13 +143,15 @@ Recursively traverses the AST and emits NASM x86-64 assembly.
 |----------|-------|
 | `RAX` | Return value, temporary computations |
 | `RBX` | Temporary for binary operations |
+| `RCX`, `RDX`, etc. | Function arguments (System V ABI) |
 | `RSP` | Stack pointer (managed by ABI) |
+| `RBP` | Base pointer (stack frames) |
 
 ### Code Gen Strategy
 
 For each node type, emit appropriate assembly:
 
-**NODE_NUMBER**: Load value into RAX
+**NODE_CONST**: Load value into RAX
 ```nasm
 mov rax, 5
 ```
@@ -157,60 +161,81 @@ mov rax, 5
 mov rax, [rel varname]
 ```
 
-**NODE_ASSIGN**: Store to variable
+**NODE_ASSIGN**: Compute right side and store to left
 ```nasm
-; compute right side into rax
+; Evaluate right side expression
+gen(right)          ; result in rax
+; Store to variable
 mov [rel varname], rax
 ```
 
-**NODE_OP_ADD**:
+**NODE_OPERATOR** (OP_ADD example):
 ```nasm
-; left value
-gen(left)          ; result in rax
-push rax            ; save it
-; right value
-gen(right)         ; result in rax
-pop rbx             ; restore left
-add rax, rbx        ; add them
+; Evaluate left
+gen(left)           ; result in rax
+push rax             ; save left
+; Evaluate right
+gen(right)          ; result in rax
+pop rbx              ; restore left
+add rax, rbx         ; add: rax = left + right
 ```
 
-**NODE_FUNC_DEF**: Emit function prologue/epilogue
+**NODE_FUNCTION**: Emit function prologue/epilogue
 ```nasm
 function_name:
     push rbp
     mov rbp, rsp
-    ; body
+    ; [generate function body]
     pop rbp
     ret
 ```
 
-**NODE_FUNC_CALL**: Set up arguments, call
+**NODE_CALL**: Set up arguments and call
 ```nasm
 ; For x86-64 System V ABI:
 ; - First arg in RDI
 ; - Second arg in RSI
 ; - Third arg in RDX
-; Result in RAX
 mov rdi, arg1_value
 mov rsi, arg2_value
 call function_name
+; Result returned in RAX
+```
+
+**NODE_RETURN**: Return value
+```nasm
+gen(expr)           ; evaluate expression into rax
+pop rbp
+ret
+```
+
+**NODE_BLOCK**: Generate code for all statements
+```nasm
+# For each statement in block
+gen(statement[0])
+gen(statement[1])
+...
 ```
 
 ## Full Compilation Flow
 
 ```
-main(argv[1])
+main(argc, argv)
   │
-  ├─ read_file(argv[1]) → char*
+  ├─ lexer_create() → lexer_t with empty token array
   │
-  ├─ lexer(char*) → Token[]
+  ├─ read source file
   │
-  ├─ parser(Token[]) → Node* (AST)
+  ├─ tokenize source → fill lexer->tokens array
   │
-  ├─ codegen(Node*) → prints to stdout or file
-  │   (writes assembly.asm)
+  ├─ parser_create(lexer) → parser_t with cursor=0
   │
-  └─ exit(0)
+  ├─ parser_run(parser) → build AST
+  │   └─ returns SUCCESS (0) or error code
+  │
+  ├─ codegen(parser->nodes) → generates NASM and writes to file
+  │
+  └─ exit with status code
 ```
 
 ## Error Handling
@@ -252,24 +277,27 @@ TOK_RBRACE, TOK_EOF
 
 **Parser output (AST):**
 ```
-NODE_FUNC_DEF {
+NODE_FUNCTION {
     name: "add",
-    args: [NODE_VAR(a), NODE_VAR(b)],
-    body: NODE_BLOCK {
-        statements: [
-            NODE_DECL(sum),
-            NODE_ASSIGN {
-                left: NODE_VAR(sum),
-                right: NODE_OP_ADD {
-                    left: NODE_VAR(a),
-                    right: NODE_VAR(b)
+    childs: [
+        NODE_VAR(a),    // parameter a
+        NODE_VAR(b),    // parameter b
+        NODE_BLOCK {    // function body
+            childs: [
+                NODE_ASSIGN {
+                    left: NODE_VAR(sum),
+                    right: NODE_OPERATOR {
+                        left: NODE_VAR(a),
+                        right: NODE_VAR(b),
+                        op: OP_ADD
+                    }
+                },
+                NODE_RETURN {
+                    childs: [NODE_VAR(sum)]
                 }
-            },
-            NODE_RETURN {
-                expr: NODE_VAR(sum)
-            }
-        ]
-    }
+            ]
+        }
+    ]
 }
 ```
 
@@ -280,9 +308,9 @@ add:
     mov rbp, rsp
     
     ; sum = a + b
-    mov rax, [rbp + 16]     ; load a
+    mov rax, [rbp + 16]     ; load arg a
     push rax
-    mov rax, [rbp + 24]     ; load b
+    mov rax, [rbp + 24]     ; load arg b
     pop rbx
     add rax, rbx            ; a + b
     mov [rbp - 8], rax      ; store to sum
@@ -296,22 +324,25 @@ add:
 
 ## Design Decisions
 
-1. **Single-pass**: Lexer → Parser → Codegen (no intermediate files)
-2. **AST preservation**: Entire AST in memory (simple, not scalable)
+1. **Single-pass pipeline**: Lexer → Parser → Codegen (no intermediate files)
+2. **Full AST in memory**: Entire AST tree retained before code generation
 3. **Direct code gen**: No IR (intermediate representation)
-4. **Global pass**: All variables global scope, or function-local
-5. **No register allocation**: Just RAX, RBX for temps
-6. **Stack frame**: Use RBP for function locals
+4. **Simple symbol table**: Minimal semantic analysis
+5. **Basic register usage**: RAX, RBX for temporaries
+6. **Stack frames**: Use RBP for function stack management
+7. **Array-based node children**: Use `array_t` for flexible child count
 
-## Future Extensions
+## Roadmap for Extensions
 
-If adding complexity in order:
+Complexity added in order:
 
-1. Add local variable scope (stack frames)
-2. Add arrays and indexing
-3. Add control flow (if/else, loops)
-4. Add function prototypes
-5. Add pointers
-6. Add structs
-7. Add multiple files and linking
-8. Add optimization passes
+1. **Comparison operators**: Add support for `<`, `>`, `<=`, `>=`, `==`, `!=`
+2. **Logical operators**: Add `&&`, `||`, `!`
+3. **Control flow**: Add `if`, `else`, `while` statements
+4. **More operators**: Add `%` (modulo), right-associative operators
+5. **Comments**: Line and block comment support in lexer
+6. **Variable scope**: Proper stack frame management for local variables
+7. **Arrays**: Basic array support with indexing
+8. **Pointers**: Pointer types and dereferencing
+9. **Multiple files**: Module system and linking
+10. **Optimization passes**: Dead code elimination, constant folding, etc.

@@ -4,12 +4,12 @@ A minimal C compiler written in C that compiles a single C file to NASM x86-64 a
 
 ## Overview
 
-MNC is a barebones compiler that follows the classic compiler architecture without optimizations, multi-file support, or advanced features. It reads a C source file and outputs NASM-compatible x86-64 assembly.
+MNC is a barebones compiler that follows the classic compiler architecture without optimizations or multi-file support. It reads a C source file, tokenizes it, builds an abstract syntax tree, and outputs NASM-compatible x86-64 assembly.
 
 ### Key Features
 - **Single file compilation**: Compiles one C file at a time
 - **No optimizations**: Straightforward, readable assembly output
-- **Simple subset of C**: Variables, functions, basic operators, control flow
+- **Simple subset of C**: Variables, functions, basic operators
 - **Direct NASM output**: Ready to assemble with `nasm -f elf64`
 
 ## Quick Start
@@ -22,37 +22,34 @@ make
 ./mncc example.c
 
 # Assemble and link
-nasm -f elf64 example.asm -o example.o
-ld example.o -o example
+nasm -f elf64 output.asm -o output.o
+ld output.o -o example
+./example
+echo $?  # Check exit code
 ```
 
-## Compiler Stages
+## Compiler Pipeline
 
-MNC follows the standard compiler pipeline:
+MNC follows the standard compiler stages:
 
-1. **Lexing**: Tokenize C source code
-2. **Parsing**: Build Abstract Syntax Tree (AST)
-3. **Semantic Analysis**: Type checking and variable validation
-4. **Code Generation**: Traverse AST and emit NASM instructions
+1. **Lexing**: Tokenize C source code into token stream
+2. **Parsing**: Build Abstract Syntax Tree (AST) using recursive descent
+3. **Code Generation**: Traverse AST and emit NASM instructions
 
 ## Supported Constructs
 
 ### Data Types
 - `int` - 64-bit signed integers only
 
-### Statements
-- Variable declarations: `int x;`
-- Assignments: `a = 5 + 3;`
-- Function declarations and calls
+### Language Features
+- Function definitions with parameters and return values
+- Variable declarations and assignments
+- Arithmetic expressions: `+`, `-`, `*`, `/`
+- Unary minus: `-x`
+- Function calls with arguments
 - Return statements
-- Block statements with `{}`
 
-### Operators
-- **Arithmetic**: `+`, `-`, `*`, `/`
-- **Assignment**: `=`
-- **Comparison**: `<`, `>`, `<=`, `>=`, `==`, `!=`
-
-### Example Input
+### Example Program
 
 ```c
 int add(int a, int b) {
@@ -63,40 +60,46 @@ int add(int a, int b) {
 
 int main() {
     int x;
-    int y;
-    x = 10;
-    y = 20;
-    int z;
-    z = add(x, y);
-    return z;
+    x = add(10, 32);
+    return x;
 }
 ```
 
 ## Documentation Structure
 
-- **README.md** - This file; quick overview
-- **ARCHITECTURE.md** - Detailed compiler structure and design
-- **TOKENS.md** - Token types and lexer reference
-- **GRAMMAR.md** - BNF-like grammar of supported C subset
-- **USAGE.md** - Command-line usage and examples
+- **[README.md](README.md)** - This file; quick overview
+- **[ARCHITECTURE.md](ARCHITECTURE.md)** - Detailed compiler design and pipeline
+- **[TOKENS.md](TOKENS.md)** - Token types and AST node reference
+- **[GRAMMAR.md](GRAMMAR.md)** - BNF-like grammar of supported C subset
+- **[USAGE.md](USAGE.md)** - Practical examples and workflows
 
 ## Project Structure
 
 ```
 mncc/
 ├── docs/              # Documentation
+│   ├── README.md
 │   ├── ARCHITECTURE.md
 │   ├── TOKENS.md
 │   ├── GRAMMAR.md
 │   └── USAGE.md
 ├── include/           # Header files
-│   └── mncc.h         # Main compiler structures
+│   ├── main.h
+│   ├── lexer/
+│   │   ├── lexer.h
+│   │   └── token.h
+│   ├── parser/
+│   │   ├── parser.h
+│   │   └── node.h
+│   └── utils/
 ├── src/               # Source code
-│   └── main.c         # Entry point
+│   ├── main.c
+│   ├── lexer/
+│   ├── parser/
+│   ├── codegen/
+│   └── utils/
 ├── tests/             # Test suite
-│   └── tests.c
 ├── Makefile
-├── README.md
 └── .git/
 ```
 
@@ -105,30 +108,33 @@ mncc/
 ```bash
 make                  # Build mncc binary
 make clean            # Remove object files
-make tests            # Run test suite (with Criterion)
+make fclean           # Clean everything
+make re               # Rebuild from scratch
+make tests            # Run test suite
 ```
 
 ## Limitations
 
-- No preprocessor (`#include`, `#define`)
-- No pointers or arrays
-- No struct/union types
-- No standard library calls (only assembly output)
-- No inter-file linking
-- Single `int` type only
-- No function prototypes (declarations must precede use)
-- Variables are global or function-local only
+- **No control flow**: `if`, `else`, `while` not supported
+- **No comparisons**: `<`, `>`, `<=`, `>=`, `==`, `!=` not supported
+- **No logical operators**: `&&`, `||`, `!` not supported  
+- **No preprocessor**: `#include`, `#define`
+- **No pointers or arrays**: Limited to basic types
+- **No struct/union types**
+- **No standard library**: No I/O functions
 
 ## Next Steps
 
-1. Read [ARCHITECTURE.md](docs/ARCHITECTURE.md) to understand the compiler design
-2. Check [TOKENS.md](docs/TOKENS.md) for the complete token reference
-3. Review [GRAMMAR.md](docs/GRAMMAR.md) for supported language constructs
-4. See [USAGE.md](docs/USAGE.md) for practical examples
+1. Read [ARCHITECTURE.md](docs/ARCHITECTURE.md) for compiler design details
+2. Check [TOKENS.md](docs/TOKENS.md) for complete token and AST node reference
+3. Review [GRAMMAR.md](docs/GRAMMAR.md) for language grammar
+4. See [USAGE.md](docs/USAGE.md) for practical compilation examples
 
-## Implementation Notes
+## Error Codes
 
-- All code fits in a single C file when possible
-- No function static or file-scoped declarations
-- Stack-based register allocation (RAX, RBX for temporary values)
-- Direct AST traversal for code generation
+- `0` - SUCCESS
+- `84` - GENERAL ERROR
+- `100` (ELEX) - Lexer error
+- `101` (EPAR) - Parser error
+- `102` (EINP) - Input error
+- `103` (EGEN) - Code generation error

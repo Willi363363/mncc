@@ -73,6 +73,26 @@ Creates `hello` executable.
 echo $?  # prints exit code: 42
 ```
 
+## Example: Simple Function
+
+Create `simple.c`:
+```c
+int main() {
+    int x;
+    x = 42;
+    return x;
+}
+```
+
+Compile and run:
+```bash
+./mncc simple.c
+nasm -f elf64 output.asm -o output.o
+ld output.o -o simple
+./simple
+echo $?  # prints 42
+```
+
 ## Example: Add Function
 
 Create `add.c`:
@@ -99,41 +119,22 @@ ld output.o -o add
 echo $?  # should print 42
 ```
 
-## Example: Conditional
+## Example: Arithmetic Operations
 
-Create `conditional.c`:
+Create `math.c`:
 ```c
-int abs(int x) {
-    if (x < 0) {
-        return -x;
-    } else {
-        return x;
-    }
+int calculate(int x, int y) {
+    int a;
+    int b;
+    int c;
+    a = x * 2;
+    b = y + 5;
+    c = a - b;
+    return c;
 }
 
 int main() {
-    return abs(-15);
-}
-```
-
-## Example: Loop
-
-Create `factorial.c`:
-```c
-int factorial(int n) {
-    int result;
-    int i;
-    result = 1;
-    i = 1;
-    while (i <= n) {
-        result = result * i;
-        i = i + 1;
-    }
-    return result;
-}
-
-int main() {
-    return factorial(5);  // returns 120
+    return calculate(10, 3);
 }
 ```
 
@@ -233,7 +234,7 @@ int main() {
 Running:
 ```bash
 ./mncc syntax_error.c
-# Error: unexpected token TOK_RETURN at line 3
+# Error: syntax error at token ...
 ```
 
 ### Undeclared Variable
@@ -251,77 +252,25 @@ Running:
 # Error: variable 'x' used but not declared
 ```
 
-## Advanced: Multiple Files Worth of Code in One
+## Supported Operations
 
-Since MNC only supports single files, write all functions in one file:
-
-```c
-int helper1(int x) {
-    return x * 2;
-}
-
-int helper2(int x) {
-    return x + 10;
-}
-
-int main() {
-    int a;
-    int b;
-    a = helper1(5);
-    b = helper2(a);
-    return b;
-}
-```
-
-## Testing Exit Codes
-
-Since MNC doesn't support printing (no `printf`), use exit codes:
-
-```c
-int test_add() {
-    if (add(2, 3) == 5) {
-        return 1;  // success
-    } else {
-        return 0;  // failure
-    }
-}
-
-int main() {
-    return test_add();
-}
-```
-
-Then:
-```bash
-./mncc test.c
-nasm -f elf64 output.asm -o output.o
-ld output.o -o test
-./test && echo "PASS" || echo "FAIL"
-```
-
-## Debugging Generated Assembly
-
-If the program doesn't behave as expected, examine the assembly:
-
-```bash
-./mncc buggy.c
-cat output.asm | head -30  # see first 30 lines
-objdump -d output.o        # disassemble object file
-```
-
-## Notes on Architecture
-
-- All integers are 64-bit signed (`int`)
-- Variables are either global or function-local
-- No optimization passes
-- No dead code elimination
-- No register allocation beyond RAX, RBX
+- **Arithmetic**: `+`, `-`, `*`, `/`
+- **Assignment**: `=`
+- **Unary minus**: `-x`
+- **Function calls**: `func(arg1, arg2, ...)`
+- **Return statements**: `return expr;`
+- **Comments**: Not yet supported
 
 ## Limitations
 
 - **No I/O**: Can't read input or print directly (only exit code)
 - **No standard library**: No `printf`, `strlen`, etc.
-- **Single file only**: Can't link multiple object files
+- **Single file only**: Can't link multiple source files
+- **No conditionals**: `if`, `else` not supported yet
+- **No loops**: `while`, `for` not supported yet
+- **No comparisons**: `<`, `>`, `<=`, `>=`, `==`, `!=` not yet supported
+- **No logical operators**: `&&`, `||`, `!` not supported yet
+- **Single data type**: Only `int` (64-bit signed)
 - **No recursion optimizations**: Stack may overflow on deep recursion
 - **Fixed calling convention**: x86-64 System V ABI assumed
 

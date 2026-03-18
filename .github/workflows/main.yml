@@ -8,20 +8,7 @@ on:
 
 jobs:
 
-  check-skip:
-    runs-on: ubuntu-latest
-    outputs:
-      skip: ${{ steps.check.outputs.skip }}
-    steps:
-    - uses: actions/checkout@v6
-      with:
-        fetch-depth: 0
-    - name: Check commit message for ci-skip
-      id: check
-      run: git log -1 --pretty=%B | grep "ci-skip"
-
   basic-build:
-    needs: check-skip
     runs-on: ubuntu-latest
 
     steps:
@@ -43,7 +30,7 @@ jobs:
         webhook: ${{ secrets.DISCORD_WEBHOOK }}
 
   cs-build:
-    needs: [check-skip, basic-build]
+    needs: [basic-build]
     runs-on: ubuntu-latest
 
     steps:
@@ -61,7 +48,7 @@ jobs:
         webhook: ${{ secrets.DISCORD_WEBHOOK }}
   
   coverage-build:
-    needs: [check-skip, basic-build]
+    needs: [basic-build]
     runs-on: ubuntu-latest
 
     steps:
@@ -79,7 +66,7 @@ jobs:
         webhook: ${{ secrets.DISCORD_WEBHOOK }}
 
   valgrind-build:
-    needs: [check-skip, basic-build]
+    needs: [basic-build]
     runs-on: ubuntu-latest
     
     steps:
@@ -103,7 +90,7 @@ jobs:
         webhook: ${{ secrets.DISCORD_WEBHOOK }}
 
   scan-build-test:
-    needs: [check-skip, basic-build]
+    needs: [basic-build]
     runs-on: ubuntu-latest
 
     steps:

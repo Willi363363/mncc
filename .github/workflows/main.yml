@@ -18,17 +18,11 @@ jobs:
         fetch-depth: 0
     - name: Check commit message for ci-skip
       id: check
-      run: |
-        if git log -1 --pretty=%B | grep "ci-skip"; then
-          echo "skip=true" >> $GITHUB_OUTPUT
-        else
-          echo "skip=false" >> $GITHUB_OUTPUT
-        fi
+      run: git log -1 --pretty=%B | grep "ci-skip"
 
   basic-build:
     needs: check-skip
     runs-on: ubuntu-latest
-    if: "needs.check-skip.outputs.skip != 'true'"
 
     steps:
     - uses: actions/checkout@v6
@@ -51,7 +45,6 @@ jobs:
   cs-build:
     needs: [check-skip, basic-build]
     runs-on: ubuntu-latest
-    if: "needs.check-skip.outputs.skip != 'true'"
 
     steps:
     - uses: actions/checkout@v6
@@ -70,7 +63,6 @@ jobs:
   coverage-build:
     needs: [check-skip, basic-build]
     runs-on: ubuntu-latest
-    if: "needs.check-skip.outputs.skip != 'true'"
 
     steps:
     - uses: actions/checkout@v6
@@ -89,7 +81,6 @@ jobs:
   valgrind-build:
     needs: [check-skip, basic-build]
     runs-on: ubuntu-latest
-    if: "needs.check-skip.outputs.skip != 'true'"
     
     steps:
     - uses: actions/checkout@v6
@@ -114,7 +105,6 @@ jobs:
   scan-build-test:
     needs: [check-skip, basic-build]
     runs-on: ubuntu-latest
-    if: "needs.check-skip.outputs.skip != 'true'"
 
     steps:
     - uses: actions/checkout@v6

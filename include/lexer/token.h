@@ -14,11 +14,13 @@ typedef enum token_type_e {
 
     // keywords
     TOK_RETURN,
+    TOK_IF,
+    TOK_ELSE,
+    TOK_WHILE,
+    TOK_FOR,
 
     // identifiers and literals
     TOK_IDENT,
-
-    TOK_NUMBER,
 
     // operators
     TOK_EQ,         // =

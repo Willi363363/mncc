@@ -18,6 +18,7 @@ node_t *node_create(node_type_t type)
     node->left = NULL;
     node->right = NULL;
     node->name = NULL;
+    node->op = OP_INVALID;
     node->value = 0;
     node->childs = array_create((array_element_destroy_t)node_destroy);
     if (!node->childs) {

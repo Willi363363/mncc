@@ -6,11 +6,16 @@
 */
 #include "parser/parser.h"
 
+token_t *parser_at(parser_t *p, int index)
+{
+    if (p->lexer->tokens->count <= index)
+        return NULL;
+    return p->lexer->tokens->data[index];
+}
+
 token_t *parser_peek(parser_t *p)
 {
-    if (p->cursor >= p->lexer->tokens->count)
-        return NULL;
-    return p->lexer->tokens->data[p->cursor];
+    return parser_at(p, p->cursor);
 }
 
 token_t *parser_next(parser_t *p)
@@ -19,7 +24,7 @@ token_t *parser_next(parser_t *p)
 
     if (tok)
         p->cursor++;
-    return tok;
+    return parser_peek(p);
 }
 
 bool parser_match(parser_t *p, token_type_t type)

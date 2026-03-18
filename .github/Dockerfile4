@@ -3,7 +3,6 @@ WORKDIR /app/make
 COPY . .
 
 RUN make
-RUN make fclean
 RUN cp ./.github/test.c ./test.c
 RUN chmod +x assemble.sh
 

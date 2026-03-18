@@ -9,9 +9,13 @@
 #include "utils/utils.h"
 #include <sys/stat.h>
 #include <string.h>
+#include <stdio.h>
 
 static int print_usage(void)
 {
+    if (printf("USAGE\n\tmncc [path]\n\nDESCRIPTION\n\tpath\tmust "
+            "have a main() function\n") < 0)
+        return get_error(EINP, "usage print");
     return SUCCESS;
 }
 

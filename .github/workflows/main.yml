@@ -106,3 +106,21 @@ jobs:
       if: always()
       with:
         webhook: ${{ secrets.DISCORD_WEBHOOK }}
+
+  assembler-build-test:
+    needs: [basic-build, cs-build]
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v6
+    - name: Copy Dockerfile inside root
+      run : cp ./.github/Dockerfile4 ./Dockerfile
+    - name: Build scan-build tests
+      run: docker build . -t asm-test --file Dockerfile --tag my-image-name:$(date +%s)
+    - name: Run scan-build tests
+      run : docker run asm-test:latest
+    - name: Discord notification
+      uses: sarisia/actions-status-discord@v1
+      if: always()
+      with:
+        webhook: ${{ secrets.DISCORD_WEBHOOK }}

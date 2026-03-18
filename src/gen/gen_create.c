@@ -1,22 +1,57 @@
 /*
 ** EPITECH PROJECT, 2026
-** mncc
+** gen_create.c
 ** File description:
-** gen_create
+** Generation context creation and initialization
 */
-
-#include "gen/gen.h"
+#include <errno.h>
 #include <stdlib.h>
+#include "gen/gen.h"
+#include "utils/utils.h"
+
+static stack_t *stack_create(void)
+{
+    stack_t *stack = malloc(sizeof(stack_t));
+
+    if (!stack)
+        return NULL;
+    stack->parent = NULL;
+    stack->variables = array_create((array_element_destroy_t)free);
+    if (!stack->variables) {
+        free(stack);
+        get_error(ENOMEM, "code generation stack allocation");
+        return NULL;
+    }
+    return stack;
+}
+
+static FILE *open_file(const char *filename)
+{
+    FILE *out = fopen(filename, "w");
+
+    if (!out) {
+        get_error(ENOMEM, "code generation output file allocation");
+        return NULL;
+    }
+    return out;
+}
 
 gen_t *gen_create(char *filename, parser_t *parser)
 {
     gen_t *gen = malloc(sizeof(gen_t));
 
-    if (!gen)
+    if (!gen) {
+        get_error(ENOMEM, "code generation context allocation");
         return NULL;
+    }
     gen->parser = parser;
-    gen->out = fopen(filename, "w");
+    gen->out = open_file(filename);
     if (!gen->out) {
+        free(gen);
+        return NULL;
+    }
+    gen->stack = stack_create();
+    if (!gen->stack) {
         free(gen);
         return NULL;
     }

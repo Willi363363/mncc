@@ -12,6 +12,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include "gen/gen.h"
 #include "lexer/lexer.h"
 #include "parser/parser.h"
 #include "utils/utils.h"
@@ -19,7 +20,7 @@
 static int print_usage(void)
 {
     if (printf("USAGE\n\tmncc [path]\n\nDESCRIPTION\n\tpath\tmust "
-            "have a main() function\n") < 0)
+               "have a main() function\n") < 0)
         return get_error(EINP, "usage print");
     return SUCCESS;
 }
@@ -56,14 +57,30 @@ static int read_file(const char *path, char **buffer)
     return 0;
 }
 
-static int process_parsing(lexer_t *lexer)
+static int process_generation(char *filename, parser_t *parser)
+{
+    gen_t *gen = gen_create(filename, parser);
+    int result = SUCCESS;
+
+    if (!gen)
+        return ERROR;
+    result = gen_header(gen);
+    if (result == SUCCESS)
+        result = gen_run(gen);
+    gen_destroy(gen);
+    return SUCCESS;
+}
+
+static int process_parsing(char *filename, lexer_t *lexer)
 {
     parser_t *parser = parser_create(lexer);
-    int result = 0;
+    int result = SUCCESS;
 
     if (!parser)
         return ERROR;
     result = parser_run(parser);
+    if (result == SUCCESS)
+        result = process_generation(filename, parser);
     parser_destroy(parser);
     return result;
 }
@@ -84,7 +101,7 @@ static int process_file(char *path)
         lexer_destroy(lexer);
         return ERROR;
     }
-    process_parsing(lexer);
+    process_parsing(path, lexer);
     lexer_destroy(lexer);
     return SUCCESS;
 }

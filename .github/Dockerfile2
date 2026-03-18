@@ -8,4 +8,4 @@ RUN make tests_re
 
 # Cleaning and testing basic executable
 
-CMD gcovr --exclude tests/tests.c.c --gcov-executable "llvm-cov gcov"; gcovr --exclude tests/tests.c --gcov-executable "llvm-cov gcov" --branches
+CMD gcovr --exclude tests/ --gcov-executable "llvm-cov gcov"; gcovr --exclude tests/ --gcov-executable "llvm-cov gcov" --branches

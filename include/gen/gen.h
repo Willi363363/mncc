@@ -11,20 +11,15 @@
     #include "parser/parser.h"
     #include "utils/array.h"
 
-typedef struct stack_data_s {
+typedef struct variable_s {
     char *name;
     int offset;
-} stack_data_t;
-
-typedef struct stack_s {
-    array_t *variables;
-    struct stack_s *parent;
-} stack_t;
+} variable_t;
 
 typedef struct gen_s {
     parser_t *parser;
     FILE *out;
-    stack_t *stack;
+    array_t *variables;
 } gen_t;
 
 gen_t *gen_create(char *filename, parser_t *parser);
@@ -39,6 +34,7 @@ int gen_declaration(gen_t *gen, node_t *node);
 int gen_assignement(gen_t *gen, node_t *node);
 int gen_return(gen_t *gen, node_t *node);
 int gen_block(gen_t *gen, node_t *node);
+int gen_call(gen_t *gen, node_t *node);
 
 // expression generation
 int gen_expression(gen_t *gen, node_t *node);

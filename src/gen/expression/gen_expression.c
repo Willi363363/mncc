@@ -17,8 +17,10 @@ int gen_expression(gen_t *gen, node_t *node)
             return gen_value(gen, node);
         case NODE_OPERATOR:
             return gen_operator(gen, node);
+        case NODE_CALL:
+            return gen_call(gen, node);
         default:
-            return get_error(EPAR,
+            return get_error(EGEN,
                 "unsupported node type in expression: '%s'",
                 node->name);
     }

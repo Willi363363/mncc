@@ -21,7 +21,7 @@ int gen_instruction(gen_t *gen, node_t *node)
         case NODE_BLOCK:
             return gen_block(gen, node);
         default:
-            return get_error(EPAR,
+            return get_error(EGEN,
                 "unsupported node type in instruction: '%s'",
                 node->name);
     }

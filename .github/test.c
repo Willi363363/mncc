@@ -1,21 +1,24 @@
 /*
 ** EPITECH PROJECT, 2026
-** mncc
+** test.c
 ** File description:
-** test
+** Test file for the MNCC project
 */
 
-//this file is used to test the lexer and the tokenization of the input string
-
-#include "main.h"
-#include "lexer/lexer.h"
-#include "lexer/token.h"
 #include <stdio.h>
-#include <stdlib.h>
+
+int get_ages_addition()
+{
+    int william = 18;
+    int alessandro = 18;
+    return william + alessandro;
+}
 
 int main()
 {
-    return 4;
-}
+    int factor = 0;
+    int diff = 3;
 
-//again a test file to test the lexer and the tokenization of the input string
+    factor = 2;
+    return diff + get_ages_addition() * factor;
+}

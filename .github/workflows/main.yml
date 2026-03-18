@@ -9,11 +9,10 @@ on:
 jobs:
 
   basic-build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: make
       run: make CICD=1
     - name: make clean
@@ -24,39 +23,54 @@ jobs:
       run: make CICD=1 re
     - name: check binary
       run: ls -l ./mncc
+    - name: Discord notification
+      uses: sarisia/actions-status-discord@v1
+      if: always()
+      with:
+        webhook: ${{ secrets.DISCORD_WEBHOOK }}
 
   cs-build:
-
+    needs: [basic-build]
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: Copy Dockerfile inside root
       run : cp ./.github/Dockerfile ./Dockerfile
     - name: Build coding-style tests
       run: docker build . -t cs-test --file Dockerfile --tag my-image-name:$(date +%s)
     - name: Run basic command
       run : docker run cs-test:latest
+    - name: Discord notification
+      uses: sarisia/actions-status-discord@v1
+      if: always()
+      with:
+        webhook: ${{ secrets.DISCORD_WEBHOOK }}
   
   coverage-build:
-
+    needs: [basic-build]
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: Copy Dockerfile inside root
       run : cp ./.github/Dockerfile2 ./Dockerfile
     - name: Build coverage-style tests
       run: docker build . -t coverage-test --file Dockerfile --tag my-image-name:$(date +%s)
     - name: Run basic command
       run : docker run coverage-test:latest
+    - name: Discord notification
+      uses: sarisia/actions-status-discord@v1
+      if: always()
+      with:
+        webhook: ${{ secrets.DISCORD_WEBHOOK }}
 
   valgrind-build:
-
+    needs: [basic-build]
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: update apt
       run : sudo apt-get update
     - name: setup valgrind
@@ -66,6 +80,47 @@ jobs:
     - name: check file
       run: ls -l ./mncc
     - name: run valgrind
-      run: valgrind --leak-check=full --show-leak-kinds=all ./mncc ./src/main.c
+      run: valgrind --leak-check=full --show-leak-kinds=all ./mncc ./.github/test.c
     - name: clean
       run: make fclean
+    - name: Discord notification
+      uses: sarisia/actions-status-discord@v1
+      if: always()
+      with:
+        webhook: ${{ secrets.DISCORD_WEBHOOK }}
+
+  scan-build-test:
+    needs: [basic-build]
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v6
+    - name: Copy Dockerfile inside root
+      run : cp ./.github/Dockerfile3 ./Dockerfile
+    - name: Build scan-build tests
+      run: docker build . -t cs-test --file Dockerfile --tag my-image-name:$(date +%s)
+    - name: Run scan-build tests
+      run : docker run cs-test:latest
+    - name: Discord notification
+      uses: sarisia/actions-status-discord@v1
+      if: always()
+      with:
+        webhook: ${{ secrets.DISCORD_WEBHOOK }}
+
+  assembler-build-test:
+    needs: [basic-build, cs-build]
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v6
+    - name: Copy Dockerfile inside root
+      run : cp ./.github/Dockerfile4 ./Dockerfile
+    - name: Build scan-build tests
+      run: docker build . -t asm-test --file Dockerfile --tag my-image-name:$(date +%s)
+    - name: Run scan-build tests
+      run : docker run asm-test:latest
+    - name: Discord notification
+      uses: sarisia/actions-status-discord@v1
+      if: always()
+      with:
+        webhook: ${{ secrets.DISCORD_WEBHOOK }}

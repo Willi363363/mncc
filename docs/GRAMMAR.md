@@ -29,44 +29,24 @@ param_list → "int" IDENT {"," "int" IDENT}
 ```
 block → {statement}
 
-statement → declaration
-          | assignment
+statement → assignment ";"
           | return_stmt
-          | if_stmt
-          | while_stmt
-          | ";" (empty statement)
 
-declaration → "int" IDENT ";"
-
-assignment → IDENT "=" expression ";"
+assignment → IDENT "=" expression
 
 return_stmt → "return" [expression] ";"
-
-if_stmt → "if" "(" expression ")" "{" block "}" ["else" "{" block "}"]
-
-while_stmt → "while" "(" expression ")" "{" block "}"
 ```
 
 ### Expressions
 
 ```
-expression → assignment_expr
-
-assignment_expr → logical_or_expr
-
-logical_or_expr → logical_and_expr {("||") logical_and_expr}
-
-logical_and_expr → equality_expr {("&&") equality_expr}
-
-equality_expr → relational_expr {("==" | "!=") relational_expr}
-
-relational_expr → additive_expr {("<" | ">" | "<=" | ">=") additive_expr}
+expression → additive_expr
 
 additive_expr → multiplicative_expr {("+" | "-") multiplicative_expr}
 
 multiplicative_expr → unary_expr {("*" | "/" | "%") unary_expr}
 
-unary_expr → ("!" | "-") unary_expr
+unary_expr → "-" unary_expr
            | postfix_expr
 
 postfix_expr → primary_expr ["(" [arg_list] ")"]
@@ -82,23 +62,40 @@ arg_list → expression {"," expression}
 
 | Precedence | Operator | Associativity |
 |------------|----------|---------------|
-| 1 | `\|\|` (logical OR) | left |
-| 2 | `&&` (logical AND) | left |
-| 3 | `==`, `!=` | left |
-| 4 | `<`, `>`, `<=`, `>=` | left |
-| 5 | `+`, `-` | left |
-| 6 | `*`, `/`, `%` | left |
-| 7 | `!`, `-` (unary) | right |
+| 1 | `+`, `-` (binary) | left |
+| 2 | `*`, `/`, `%` | left |
+| 3 | `-` (unary) | right |
 
 ## Example Programs
 
-### Simple Assignment
+### Simple Assignment In Function
+
+```c
+int add(int a, int b) {
+    int result;
+    result = a + b;
+    return result;
+}
+```
+
+Parses as:
+```
+program:
+  function_def:
+    name: "add"
+    params: [a, b]
+    block:
+      assign: result = (a + b)
+      return: result
+```
+
+### Function Call
 
 ```c
 int main() {
-    int x;
-    x = 5;
-    return x;
+    int sum;
+    sum = add(10, 32);
+    return sum;
 }
 ```
 
@@ -109,68 +106,8 @@ program:
     name: "main"
     params: []
     block:
-      declaration: "x"
-      assignment: x = 5
-      return: x
-```
-
-### Function with Parameters
-
-```c
-int add(int a, int b) {
-    return a + b;
-}
-```
-
-Parses as:
-```
-program:
-  function_def:
-    name: "add"
-    params: ["a", "b"]
-    block:
-      return: (a + b)
-```
-
-### Conditional
-
-```c
-int max(int x, int y) {
-    if (x > y) {
-        return x;
-    } else {
-        return y;
-    }
-}
-```
-
-Parses as:
-```
-program:
-  function_def:
-    name: "max"
-    params: ["x", "y"]
-    block:
-      if_stmt:
-        condition: (x > y)
-        then_block: return x
-        else_block: return y
-```
-
-### Loop
-
-```c
-int sum_to(int n) {
-    int sum;
-    int i;
-    sum = 0;
-    i = 0;
-    while (i < n) {
-        sum = sum + i;
-        i = i + 1;
-    }
-    return sum;
-}
+      assign: sum = add(10, 32)
+      return: sum
 ```
 
 ## Constraints & Limitations
@@ -180,20 +117,22 @@ int sum_to(int n) {
 - **Pointers** (`*`, `&`, `->`)
 - **Arrays** (`[]`)
 - **Structs/Unions** (`.`, `->`)
-- **Typedef** 
-- **Enum**
+- **Typedef**, **Enum**
 - **Floating point** (double, float)
 - **Strings** (char arrays)
 - **Function pointers**
-- **Multiple return types** (only `int`)
 - **Preprocessor** (`#include`, `#define`)
+- **Conditional statements** (`if`, `else`)
+- **Loops** (`while`, `for`)
+- **Comparison operators** (`<`, `>`, `<=`, `>=`, `==`, `!=`)
+- **Logical operators** (`&&`, `||`, `!`)
 
 ### Scope Rules
 
-1. **Global scope**: All functions, all variables without function
-2. **Function scope**: Function parameters and local variables
-3. **No nested function scopes**: Can't declare nested functions
-4. **No block scope**: Variables declared anywhere in function are function-scoped
+1. All function names must be unique
+2. Function parameters and local variables are function-scoped
+3. No nested function scopes
+4. All variables are function-local or global
 
 ### Type Rules
 
@@ -204,31 +143,24 @@ int sum_to(int n) {
 
 ### Other Rules
 
-- Function names must be unique
-- Variable names must be unique (within scope)
 - Variable must be declared before use
 - `main()` function should exist (entry point)
 - All statements must end with `;`
+- Parameters must be declared as `int IDENT`
 
 ## Valid Program Structure
 
 ```c
-int func1(int a, int b) {
-    int local1;
-    int local2;
-    local1 = a + b;
-    local2 = a - b;
-    return local1;
-}
-
-int func2(int x) {
-    return func1(x, 10);
+int helper(int x) {
+    int result;
+    result = x * 2;
+    return result;
 }
 
 int main() {
-    int result;
-    result = func2(5);
-    return result;
+    int value;
+    value = helper(5);
+    return value;
 }
 ```
 
@@ -236,13 +168,15 @@ int main() {
 
 ```c
 // ❌ Missing semicolon
-int x = 5
+int main() {
+    int x = 5
+}
 
-// ❌ Undeclared variable
-func(undeclared);
-
-// ❌ No return type specified
-foo(int a) { }
+// ❌ If statements not supported
+int max(int a, int b) {
+    if (a > b) return a;
+    return b;
+}
 
 // ❌ Unsupported: pointers
 int *ptr;
@@ -250,15 +184,17 @@ int *ptr;
 // ❌ Unsupported: array
 int arr[10];
 
-// ❌ Missing braces
-int func() return 5;
+// ❌ Unsupported: comparison operators
+int is_positive(int x) {
+    return x > 0;
+}
 ```
 
 ## Parser Error Recovery
 
 Current parser: **no error recovery**
 - First syntax error → parser exits immediately
-- Reports error message with context
+- Reports error message with error code
 - Doesn't attempt to continue parsing
 
 ## Expression Examples
@@ -266,14 +202,12 @@ Current parser: **no error recovery**
 Valid expressions (all evaluate to `int`):
 
 ```
-5                    // number
+5                    // constant
 x                    // variable
 x + 5                // addition
 x + y * 2            // precedence: y*2 first, then +
 (x + y) * 2          // parentheses override
-x < 10               // comparison (0 false, 1 true)
-x == 5 && y > 0      // logical AND (result: 0 or 1)
-!x                   // logical NOT
 -x                   // unary minus
 func(1, 2, 3)        // function call
+func(x + 1, y)       // nested expressions in args
 ```

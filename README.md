@@ -1,4 +1,4 @@
-# MNC - Mini C Compiler
+# MNCC - Mini C Compiler
 
 A minimal C compiler written in C that compiles a single C file to NASM x86-64 assembly.
 

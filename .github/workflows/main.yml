@@ -19,7 +19,7 @@ jobs:
     - name: Check commit message for ci-skip
       id: check
       run: |
-        if git log -1 --pretty=%B | grep -q "ci-skip"; then
+        if git log -1 --pretty=%B | grep -q "*ci-skip*"; then
           echo "skip=true" >> $GITHUB_OUTPUT
         else
           echo "skip=false" >> $GITHUB_OUTPUT

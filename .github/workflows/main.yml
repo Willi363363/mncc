@@ -49,7 +49,7 @@ jobs:
         webhook: ${{ secrets.DISCORD_WEBHOOK }}
 
   cs-build:
-    needs: check-skip
+    needs: [check-skip, basic-build]
     runs-on: ubuntu-latest
     if: "needs.check-skip.outputs.skip != 'true'"
 
@@ -68,7 +68,7 @@ jobs:
         webhook: ${{ secrets.DISCORD_WEBHOOK }}
   
   coverage-build:
-    needs: check-skip
+    needs: [check-skip, basic-build]
     runs-on: ubuntu-latest
     if: "needs.check-skip.outputs.skip != 'true'"
 
@@ -87,7 +87,7 @@ jobs:
         webhook: ${{ secrets.DISCORD_WEBHOOK }}
 
   valgrind-build:
-    needs: check-skip
+    needs: [check-skip, basic-build]
     runs-on: ubuntu-latest
     if: "needs.check-skip.outputs.skip != 'true'"
     

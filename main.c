@@ -59,13 +59,14 @@ static int read_file(const char *path, char **buffer)
 
 static int process_generation(parser_t *parser)
 {
-    gen_t *gen = gen_create("a.nasm", parser);
+    gen_t *gen = gen_create(".github/a.asm", parser);
     int result = SUCCESS;
 
     if (!gen)
         return ERROR;
     result = gen_run(gen);
     gen_destroy(gen);
+    nasm_assemble(".github/a.asm");
     return result;
 }
 

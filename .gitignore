@@ -10,3 +10,5 @@ mncc
 unit_tests*
 *.txt
 *.gc*
+*.asm
+

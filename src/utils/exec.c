@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include "main.h"
 #include "utils/utils.h"
+#include <stdio.h>
 
 int nasm_assemble(char const *path)
 {

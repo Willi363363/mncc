@@ -13,12 +13,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int main(void)
+int main()
 {
-    int a = 3 + 2;
-    int b = f(91);
-
-    return a;
+    return 4;
 }
 
 //again a test file to test the lexer and the tokenization of the input string

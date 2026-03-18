@@ -110,3 +110,22 @@ jobs:
       if: always()
       with:
         webhook: ${{ secrets.DISCORD_WEBHOOK }}
+
+  scan-build-test:
+    needs: [check-skip, basic-build]
+    runs-on: ubuntu-latest
+    if: "needs.check-skip.outputs.skip != 'true'"
+
+    steps:
+    - uses: actions/checkout@v6
+    - name: Copy Dockerfile inside root
+      run : cp ./.github/Dockerfile3 ./Dockerfile
+    - name: Build scan-build tests
+      run: docker build . -t cs-test --file Dockerfile --tag my-image-name:$(date +%s)
+    - name: Run scan-build tests
+      run : docker run cs-test:latest
+    - name: Discord notification
+      uses: sarisia/actions-status-discord@v1
+      if: always()
+      with:
+        webhook: ${{ secrets.DISCORD_WEBHOOK }}

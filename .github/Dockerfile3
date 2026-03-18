@@ -1,0 +1,9 @@
+FROM epitechcontent/epitest-docker:latest AS builder
+WORKDIR /app/make
+COPY . .
+
+RUN make
+RUN make fclean
+# Cleaning and testing basic executable
+
+CMD scan-build --status-bugs make re; 

@@ -80,7 +80,7 @@ jobs:
     - name: check file
       run: ls -l ./mncc
     - name: run valgrind
-      run: valgrind --leak-check=full --show-leak-kinds=all ./mncc ./github/test.c
+      run: valgrind --leak-check=full --show-leak-kinds=all ./mncc ./.github/test.c
     - name: clean
       run: make fclean
     - name: Discord notification

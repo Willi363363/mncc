@@ -22,7 +22,7 @@ Test(parser, parse_simple_instruction)
 
     cr_assert_not_null(parser);
     array_push(lexer->tokens, token_create(TOK_RETURN, "return"));
-    array_push(lexer->tokens, token_create(TOK_INT, "24"));
+    array_push(lexer->tokens, token_create(TOK_NUMBER, "24"));
     array_push(lexer->tokens, token_create(TOK_SEMI, NULL));
     node = parse_instruction(parser);
     cr_assert_not_null(node);
@@ -50,7 +50,7 @@ Test(parser, parse_function_declaration)
     array_push(lexer->tokens, token_create(TOK_RPAREN, NULL));
     array_push(lexer->tokens, token_create(TOK_LBRACE, NULL));
     array_push(lexer->tokens, token_create(TOK_RETURN, "return"));
-    array_push(lexer->tokens, token_create(TOK_INT, "0"));
+    array_push(lexer->tokens, token_create(TOK_NUMBER, "0"));
     array_push(lexer->tokens, token_create(TOK_SEMI, NULL));
     array_push(lexer->tokens, token_create(TOK_RBRACE, NULL));
     node = parse_function(parser);

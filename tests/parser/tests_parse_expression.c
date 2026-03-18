@@ -19,9 +19,9 @@ Test(parser, parse_simple_expression)
     node_t *node = NULL;
 
     cr_assert_not_null(parser);
-    array_push(lexer->tokens, token_create(TOK_INT, "42"));
+    array_push(lexer->tokens, token_create(TOK_NUMBER, "42"));
     array_push(lexer->tokens, token_create(TOK_PLUS, "+"));
-    array_push(lexer->tokens, token_create(TOK_INT, "24"));
+    array_push(lexer->tokens, token_create(TOK_NUMBER, "24"));
     array_push(lexer->tokens, token_create(TOK_EOF, NULL));
     node = parse_expression(parser);
     cr_assert_not_null(node);
@@ -43,11 +43,11 @@ Test(parser, parse_priority_expression)
     node_t *node = NULL;
 
     cr_assert_not_null(parser);
-    array_push(lexer->tokens, token_create(TOK_INT, "42"));
+    array_push(lexer->tokens, token_create(TOK_NUMBER, "42"));
     array_push(lexer->tokens, token_create(TOK_PLUS, "+"));
-    array_push(lexer->tokens, token_create(TOK_INT, "24"));
+    array_push(lexer->tokens, token_create(TOK_NUMBER, "24"));
     array_push(lexer->tokens, token_create(TOK_MUL, "*"));
-    array_push(lexer->tokens, token_create(TOK_INT, "2"));
+    array_push(lexer->tokens, token_create(TOK_NUMBER, "2"));
     array_push(lexer->tokens, token_create(TOK_EOF, NULL));
     node = parse_expression(parser);
     cr_assert_not_null(node);

@@ -22,7 +22,7 @@ static int is_operator_token(token_t *token)
 
 static int is_value_token(token_t *token)
 {
-    return token->type == TOK_INT || token->type == TOK_IDENT;
+    return token->type == TOK_NUMBER || token->type == TOK_IDENT;
 }
 
 static int is_expression_token(token_t *token)

@@ -47,6 +47,6 @@ node_t *parse_block(parser_t *parser)
         if (handle_instruction(parser, node) != SUCCESS)
             return NULL;
     }
-    parser_next(parser);
+    parser->cursor++;
     return node;
 }

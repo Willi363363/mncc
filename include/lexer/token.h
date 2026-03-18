@@ -25,7 +25,7 @@ typedef enum token_type_e {
 
     // operators
     TOK_EQ,         // =
-    TOK_PLUS,       //e +
+    TOK_PLUS,       // +
     TOK_MINUS,      // -
     TOK_MUL,        // *
     TOK_DIV,        // /

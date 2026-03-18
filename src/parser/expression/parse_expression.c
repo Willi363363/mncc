@@ -82,9 +82,9 @@ node_t *parse_sized_expression(parser_t *parser, int size)
     if (is_operator) {
         node = parse_operator(parser, size);
         if (!node) {
-            get_error(EPAR,
-                "invalid operator in expression '%s'",
-                parser_peek(parser) ? parser_peek(parser)->value : "end of input");
+            get_error(EPAR, "invalid operator in expression '%s'",
+                parser_peek(parser) ? parser_peek(parser)->value
+                : "end of input");
             return NULL;
         }
     } else

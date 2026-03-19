@@ -14,6 +14,8 @@ int gen_instruction(gen_t *gen, node_t *node)
     switch (node->type) {
         case NODE_RETURN:
             return gen_return(gen, node);
+        case NODE_IF:
+            return gen_if(gen, node);
         case NODE_DECLARATION:
             return gen_declaration(gen, node);
         case NODE_ASSIGN:

@@ -20,6 +20,9 @@ typedef struct gen_s {
     parser_t *parser;
     FILE *out;
     array_t *variables;
+    int indentation;
+    void (*write)(struct gen_s *gen, const char *str, ...);
+    void (*add_section)(struct gen_s *gen, const char *str, ...);
 } gen_t;
 
 gen_t *gen_create(char *filename, parser_t *parser);
@@ -35,6 +38,7 @@ int gen_assignement(gen_t *gen, node_t *node);
 int gen_return(gen_t *gen, node_t *node);
 int gen_block(gen_t *gen, node_t *node);
 int gen_call(gen_t *gen, node_t *node);
+int gen_if(gen_t *gen, node_t *node);
 
 // expression generation
 int gen_expression(gen_t *gen, node_t *node);

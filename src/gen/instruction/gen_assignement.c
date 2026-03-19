@@ -4,7 +4,6 @@
 ** File description:
 ** Generation of assignement instruction node to assembly code
 */
-#include <stdio.h>
 #include <string.h>
 #include "gen/gen.h"
 #include "main.h"
@@ -32,6 +31,6 @@ int gen_assignement(gen_t *gen, node_t *node)
         return ERROR;
     if (gen_expression(gen, node->right) != SUCCESS)
         return ERROR;
-    fprintf(gen->out, "    mov [rbp - 0x%X], rax\n", offset);
+    gen->write(gen, "mov [rbp - 0x%X], rax", offset);
     return SUCCESS;
 }

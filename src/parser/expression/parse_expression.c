@@ -17,7 +17,7 @@ static int is_operator_token(token_t *token)
         return true;
     if (token->type == TOK_MUL || token->type == TOK_DIV)
         return true;
-    return false;
+    return token->type == TOK_EQ;
 }
 
 static int is_value_token(token_t *token)

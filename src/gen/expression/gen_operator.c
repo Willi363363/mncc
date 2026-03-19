@@ -4,45 +4,65 @@
 ** File description:
 ** Generation of operator nodes to assembly code
 */
-#include <stdio.h>
 #include "gen/gen.h"
 #include "main.h"
 #include "parser/node.h"
 #include "utils/utils.h"
 
-static char *get_operator_str(operator_type_t op)
+static int gen_equal_operator(gen_t *gen, node_t *node)
 {
-    switch (op) {
-        case OP_ADD:
-            return "add";
-        case OP_SUB:
-            return "sub";
-        case OP_MUL:
-            return "imul";
-        case OP_DIV:
-            return "idiv";
-        default:
-            return NULL;
+    gen_expression(gen, node->right);
+    gen->write(gen, "push rax");
+    gen_expression(gen, node->left);
+    gen->write(gen, "pop rbx");
+    gen->write(gen, "cmp rax, rbx");
+    gen->write(gen, "sete al");
+    gen->write(gen, "movzx rax, al");
+    return SUCCESS;
+}
+
+static int gen_div_operator(gen_t *gen, node_t *node)
+{
+    gen_expression(gen, node->right);
+    gen->write(gen, "push rax");
+    gen_expression(gen, node->left);
+    gen->write(gen, "pop rbx");
+    gen->write(gen, "xor rdx, rdx");
+    gen->write(gen, "div rbx");
+    return SUCCESS;
+}
+
+static int gen_basic_operator(gen_t *gen, node_t *node, char *str)
+{
+    gen_expression(gen, node->right);
+    gen->write(gen, "push rax");
+    gen_expression(gen, node->left);
+    gen->write(gen, "pop rbx");
+    if (node->op == OP_DIV) {
+        gen->write(gen, "xor rdx, rdx");
+        gen->write(gen, "div rbx");
+        return SUCCESS;
     }
+    gen->write(gen, "%s rax, rbx", str);
+    return SUCCESS;
 }
 
 int gen_operator(gen_t *gen, node_t *node)
 {
-    char *op_str = get_operator_str(node->op);
-
-    if (!op_str) {
-        get_error(EGEN, "invalid operator in code generation");
-        return ERROR;
+    switch (node->op) {
+        case OP_ADD:
+            return gen_basic_operator(gen, node, "add");
+        case OP_SUB:
+            return gen_basic_operator(gen, node, "sub");
+        case OP_MUL:
+            return gen_basic_operator(gen, node, "imul");
+        case OP_DIV:
+            return gen_div_operator(gen, node);
+        case OP_EQUAL:
+            return gen_equal_operator(gen, node);
+        default:
+            return get_error(EGEN,
+                "unsupported operator type in expression: '%s'",
+                node->name);
     }
-    gen_expression(gen, node->right);
-    fprintf(gen->out, "    push rax\n");
-    gen_expression(gen, node->left);
-    fprintf(gen->out, "    pop rbx\n");
-    if (node->op == OP_DIV) {
-        fprintf(gen->out, "    xor rdx, rdx\n");
-        fprintf(gen->out, "    div rbx\n");
-        return SUCCESS;
-    }
-    fprintf(gen->out, "    %s rax, rbx\n", op_str);
-    return SUCCESS;
 }

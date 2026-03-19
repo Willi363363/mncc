@@ -6,12 +6,14 @@
 */
 #include <stdio.h>
 
-int add(int a, int b, int c)
+int add(int a, int b)
 {
-    return a + b + c;
+    if (a == b)
+        return a + 3;
+    return b;
 }
 
 int main()
 {
-    return (3 + add(15, 8, (((((4 + 5))))))) * 3;
+    return add(42, 42);
 }

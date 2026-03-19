@@ -5,7 +5,6 @@
 ** Generation of function node to assembly code
 */
 #include <errno.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "gen/gen.h"
@@ -33,15 +32,18 @@ static void put_arguments_in_stack(gen_t *gen, node_t *node)
     node_t *arg = NULL;
     variable_t *var = NULL;
 
+    if (node->childs->count == 1)
+        return;
+    gen->add_section(gen, "arguments");
     for (int i = 0; i < node->childs->count - 1; i++) {
         reg = gen_get_register(i);
         arg = node->childs->data[i];
         var = create_variable(gen, arg->name);
-        fprintf(gen->out, "    sub rsp, 0x%X\n", var->offset);
+        gen->write(gen, "sub rsp, 0x%X", var->offset);
         if (var->offset > 0)
-            fprintf(gen->out, "    mov [rbp - 0x%X], %s\n", var->offset, reg);
+            gen->write(gen, "mov [rbp - 0x%X], %s", var->offset, reg);
         else
-            fprintf(gen->out, "    mov [rbp], %s\n", reg);
+            gen->write(gen, "mov [rbp], %s", reg);
     }
 }
 
@@ -56,6 +58,27 @@ static void gen_function_body(gen_t *gen, node_t *node)
     }
 }
 
+static void write_start(gen_t *gen, node_t *node)
+{
+    gen->add_section(gen,
+        "function: %s - %d arguments",
+        node->name,
+        node->childs->count - 1);
+    gen->write(gen, "%s:", node->name);
+    gen->indentation++;
+    gen->write(gen, "push rbp");
+    gen->write(gen, "mov rbp, rsp");
+}
+
+static void write_end(gen_t *gen)
+{
+    gen->add_section(gen, "end");
+    gen->write(gen, ".return:");
+    gen->write(gen, "leave");
+    gen->write(gen, "ret");
+    gen->indentation--;
+}
+
 int gen_function(gen_t *gen, node_t *node)
 {
     variable_t *data = NULL;
@@ -63,12 +86,11 @@ int gen_function(gen_t *gen, node_t *node)
     gen->variables = array_create((array_element_destroy_t)free);
     if (!gen->variables)
         return get_error(ENOMEM, "generator function variables allocation");
-    fprintf(gen->out, "%s:\n", node->name);
-    fprintf(gen->out, "    push rbp\n    mov rbp, rsp\n");
+    write_start(gen, node);
     put_arguments_in_stack(gen, node);
+    gen->add_section(gen, "body");
     gen_function_body(gen, node);
-    fprintf(gen->out, "    leave\n    ret\n");
-    fprintf(gen->out, "\n");
+    write_end(gen);
     for (int i = 0; i < gen->variables->count; i++) {
         data = gen->variables->data[i];
         free(data->name);

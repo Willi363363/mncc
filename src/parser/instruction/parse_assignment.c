@@ -15,7 +15,7 @@
 
 static int parse_lhs(parser_t *parser, node_t *assign_node)
 {
-    node_t *lhs = parse_expression(parser);
+    node_t *lhs = parse_sized_expression(parser, 1);
 
     if (!lhs)
         return get_error(ENOMEM, "parser assignment node allocation");

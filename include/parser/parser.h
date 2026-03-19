@@ -16,6 +16,7 @@ typedef struct parser_s {
     lexer_t *lexer;
     int cursor;
     array_t *nodes;
+    int id_counter;
 } parser_t;
 
 parser_t *parser_create(lexer_t *lexer);
@@ -29,6 +30,7 @@ token_t *parser_at(parser_t *p, int index);
 token_t *parser_peek(parser_t *p);
 token_t *parser_next(parser_t *p);
 bool parser_match(parser_t *p, token_type_t type);
+token_t **parser_tokens_peek(parser_t *p);
 
 // instruction
 node_t *parse_instruction(parser_t *parser);
@@ -39,10 +41,17 @@ node_t *parse_function(parser_t *parser);
 node_t *parse_declaration(parser_t *parser);
 node_t *parse_block(parser_t *parser);
 node_t *parse_call(parser_t *parser);
+node_t *parse_if(parser_t *parser);
 
 // expression
 node_t *parse_expression(parser_t *parser);
 node_t *parse_operator(parser_t *parser, int size);
 node_t *parse_value(parser_t *parser);
+
+// operator matching
+bool tokens_match_operator(token_t **tokens, operator_type_t op);
+operator_type_t tokens_to_operator(token_t **tokens);
+int get_operator_offset(parser_t *parser, int size, operator_type_t op);
+int get_operator_size(operator_type_t op);
 
 #endif /* PARSER_H */

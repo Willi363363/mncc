@@ -7,9 +7,9 @@
 #ifndef NODE_H
     #define NODE_H
     #include "utils/array.h"
-    #define OPERATOR_COUNT 4
+    #include "lexer/token.h"
+    #define OPERATOR_COUNT 5
     #define DATA_TYPE_COUNT 2
-
 
 typedef enum data_type_e {
     DATA_INT,
@@ -18,12 +18,19 @@ typedef enum data_type_e {
 } data_type_t;
 
 typedef enum operator_type_e {
+    OP_EQUAL,
     OP_ADD,
     OP_SUB,
     OP_MUL,
     OP_DIV,
     OP_INVALID
 } operator_type_t;
+
+typedef struct operator_mapping_s {
+    operator_type_t op;
+    token_type_t tokens[3];
+} operator_mapping_t;
+
 
 typedef enum node_type_e {
     // instructions
@@ -32,6 +39,8 @@ typedef enum node_type_e {
     NODE_ASSIGN,
     NODE_DECLARATION,
     NODE_RETURN,
+    NODE_IF,
+    NODE_WHILE,
 
     // values
     NODE_CONST,

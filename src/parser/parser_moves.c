@@ -33,3 +33,12 @@ bool parser_match(parser_t *p, token_type_t type)
 
     return tok && tok->type == type;
 }
+
+token_t **parser_tokens_peek(parser_t *p)
+{
+    int index = p->cursor;
+
+    if (p->lexer->tokens->count <= index)
+        return NULL;
+    return (token_t **)p->lexer->tokens->data + index;
+}

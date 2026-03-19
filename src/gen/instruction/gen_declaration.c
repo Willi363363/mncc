@@ -5,7 +5,6 @@
 ** Generation of declaration instruction node to assembly code
 */
 #include <errno.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "gen/gen.h"
@@ -42,7 +41,7 @@ int gen_declaration(gen_t *gen, node_t *node)
 {
     int offset = 0;
 
-    fprintf(gen->out, "    sub rsp, 8\n");
+    gen->write(gen, "sub rsp, 8");
     if (!node->left || !node->left->name)
         return get_error(EGEN, "declaration node missing variable name");
     if (create_variable(gen, node->left->name) != SUCCESS)
@@ -52,9 +51,9 @@ int gen_declaration(gen_t *gen, node_t *node)
         if (offset < 0)
             return ERROR;
         if (offset > 0)
-            fprintf(gen->out, "    mov [rbp - 0x%X], 0\n", offset);
+            gen->write(gen, "mov [rbp - 0x%X], 0", offset);
         else
-            fprintf(gen->out, "    mov [rbp], 0\n");
+            gen->write(gen, "mov [rbp], 0");
     }
     if (node->right)
         return gen_assignement(gen, node);

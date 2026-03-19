@@ -9,8 +9,29 @@
 #include <criterion/redirect.h>
 #include "lexer/lexer.h"
 #include "lexer/token.h"
+#include "parser/node.h"
 #include "parser/parser.h"
 #include "utils/array.h"
+
+Test(parser, token_match_operator_plus)
+{
+    token_t *tokens[3] = {token_create(TOK_PLUS, "+"),
+        token_create(TOK_EOF, NULL),
+        token_create(TOK_EOF, NULL)};
+    operator_type_t op = OP_ADD;
+
+    cr_assert(tokens_match_operator(tokens, op));
+}
+
+Test(parser, token_match_operator_equal)
+{
+    token_t *tokens[3] = {token_create(TOK_EQ, "="),
+        token_create(TOK_EQ, "="),
+        token_create(TOK_EOF, NULL)};
+    operator_type_t op = OP_EQUAL;
+
+    cr_assert(tokens_match_operator(tokens, op));
+}
 
 Test(parser, parse_simple_expression)
 {

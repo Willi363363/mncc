@@ -26,24 +26,36 @@ static variable_t *create_variable(gen_t *gen, char *name)
     return data;
 }
 
+static void put_argument_in_stack(gen_t *gen, node_t *arg, int i)
+{
+    const char *reg = gen_get_register(i);
+    variable_t *var = create_variable(gen, arg->name);
+
+    gen->write(gen, "sub rsp, 0x%X", var->offset);
+    if (var->offset > 0)
+        gen->write(gen,
+            "mov [rbp - 0x%X], %s ; %s",
+            var->offset,
+            reg,
+            arg->name);
+    else
+        gen->write(gen, "mov [rbp], %s ; %s", reg, arg->name);
+}
+
 static void put_arguments_in_stack(gen_t *gen, node_t *node)
 {
-    const char *reg = NULL;
     node_t *arg = NULL;
-    variable_t *var = NULL;
+    int count = 0;
 
     if (node->childs->count == 1)
         return;
     gen->add_section(gen, "arguments");
     for (int i = 0; i < node->childs->count - 1; i++) {
-        reg = gen_get_register(i);
         arg = node->childs->data[i];
-        var = create_variable(gen, arg->name);
-        gen->write(gen, "sub rsp, 0x%X", var->offset);
-        if (var->offset > 0)
-            gen->write(gen, "mov [rbp - 0x%X], %s", var->offset, reg);
-        else
-            gen->write(gen, "mov [rbp], %s", reg);
+        if (arg->type == NODE_BLOCK)
+            continue;
+        put_argument_in_stack(gen, arg, count);
+        count++;
     }
 }
 

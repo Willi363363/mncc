@@ -42,7 +42,7 @@ int gen_if(gen_t *gen, node_t *node);
 
 // expression generation
 int gen_expression(gen_t *gen, node_t *node);
-int gen_value(gen_t *gen, node_t *node);
+int gen_value_in_register(gen_t *gen, node_t *node, int i);
 int gen_operator(gen_t *gen, node_t *node);
 
 const char *gen_get_register(int i);

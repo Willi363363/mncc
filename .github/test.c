@@ -6,14 +6,22 @@
 */
 #include <stdio.h>
 
-int add(int a, int b)
+int pow_recursive(int a, int b, int result)
 {
-    if (a == b)
-        return a + 3;
-    return b;
+    if (b == 0)
+        return result;
+
+    b = b - 1;
+    result = result * a;
+    return pow_recursive(a, b, result);
+}
+
+int pow(int num, int x)
+{
+    return pow_recursive(num, x, 1);
 }
 
 int main()
 {
-    return add(42, 42);
+    return pow(16, 2);
 }

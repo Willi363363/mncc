@@ -10,7 +10,7 @@
 
 static int load_arguments(gen_t *gen, node_t *node)
 {
-    for (int i = node->childs->count - 1; i >= 1; i--) {
+    for (int i = 1; i < node->childs->count; i++) {
         gen->write(gen, "pop %s", gen_get_register(i));
     }
     return SUCCESS;
@@ -27,6 +27,5 @@ int gen_call(gen_t *gen, node_t *node)
     }
     load_arguments(gen, node);
     gen->write(gen, "call %s", node->name);
-    gen->write(gen, "add rsp, 0x%X", node->childs->count * 8);
     return SUCCESS;
 }

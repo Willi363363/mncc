@@ -23,12 +23,13 @@ static int get_offset(gen_t *gen, const char *name)
     return -1;
 }
 
-int gen_value(gen_t *gen, node_t *node)
+int gen_value_in_register(gen_t *gen, node_t *node, int i)
 {
+    const char *reg = gen_get_register(i);
     int offset = 0;
 
     if (node->type == NODE_CONST) {
-        gen->write(gen, "mov rax, 0x%X", node->value);
+        gen->write(gen, "mov %s, 0x%X", reg, node->value);
         return SUCCESS;
     }
     if (node->type == NODE_VAR) {
@@ -36,9 +37,9 @@ int gen_value(gen_t *gen, node_t *node)
         if (offset < 0)
             return ERROR;
         if (offset > 0)
-            gen->write(gen, "mov rax, [rbp - 0x%X]", offset);
+            gen->write(gen, "mov %s, [rbp - 0x%X]", reg, offset);
         else
-            gen->write(gen, "mov rax, [rbp]");
+            gen->write(gen, "mov %s, [rbp]", reg);
     }
     return SUCCESS;
 }

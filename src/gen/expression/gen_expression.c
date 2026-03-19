@@ -14,7 +14,7 @@ int gen_expression(gen_t *gen, node_t *node)
     switch (node->type) {
         case NODE_CONST:
         case NODE_VAR:
-            return gen_value(gen, node);
+            return gen_value_in_register(gen, node, 0);
         case NODE_OPERATOR:
             return gen_operator(gen, node);
         case NODE_CALL:

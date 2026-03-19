@@ -16,12 +16,12 @@ int pow_recursive(int a, int b, int result)
     return pow_recursive(a, b, result);
 }
 
-int pow(int num, int x)
+int my_pow(int num, int x)
 {
     return pow_recursive(num, x, 1);
 }
 
 int main()
 {
-    return pow(16, 2);
+    return my_pow(3, 4);
 }

@@ -1,140 +1,70 @@
-# MNCC - Mini C Compiler
+# MNCC
 
-A minimal C compiler written in C that compiles a single C file to NASM x86-64 assembly.
+MNCC is a small C-to-assembly transpiler prototype.
 
-## Overview
+Current behavior is:
 
-MNC is a barebones compiler that follows the classic compiler architecture without optimizations or multi-file support. It reads a C source file, tokenizes it, builds an abstract syntax tree, and outputs NASM-compatible x86-64 assembly.
+1. Read one C source file.
+2. Lex it into tokens.
+3. Parse top-level functions into an AST.
+4. Generate NASM x86-64 assembly into `.github/a.asm`.
+5. Execute `assemble.sh`, which runs NASM + LD to produce `.github/a.out`.
 
-### Key Features
-- **Single file compilation**: Compiles one C file at a time
-- **No optimizations**: Straightforward, readable assembly output
-- **Simple subset of C**: Variables, functions, basic operators
-- **Direct NASM output**: Ready to assemble with `nasm -f elf64`
+## What It Is (Today)
 
-## Quick Start
+- Single-file frontend + codegen prototype.
+- Targets Linux x86-64 (uses `_start` + `syscall` exit sequence).
+- Produces and assembles a fixed output path (`.github/a.asm`, `.github/a.out`).
+- Supports only a narrow subset of C-like syntax.
 
-```bash
-# Build the compiler
-make
+## What Is Actually Supported End-to-End
 
-# Compile a C file to NASM
-./mncc example.c
+- Function definitions returning `int`
+- Function parameters typed as `int` (parsed as declarations)
+- Assignments with arithmetic expressions: `+`, `-`, `*`, `/`
+- Function call expressions in assignments/returns
+- `return;` and `return <expr>;`
 
-# Assemble and link
-nasm -f elf64 output.asm -o output.o
-ld output.o -o example
-./example
-echo $?  # Check exit code
-```
-
-## Compiler Pipeline
-
-MNC follows the standard compiler stages:
-
-1. **Lexing**: Tokenize C source code into token stream
-2. **Parsing**: Build Abstract Syntax Tree (AST) using recursive descent
-3. **Code Generation**: Traverse AST and emit NASM instructions
-
-## Supported Constructs
-
-### Data Types
-- `int` - 64-bit signed integers only
-
-### Language Features
-- Function definitions with parameters and return values
-- Variable declarations and assignments
-- Arithmetic expressions: `+`, `-`, `*`, `/`
-- Unary minus: `-x`
-- Function calls with arguments
-- Return statements
-
-### Example Program
+Example that works with current pipeline:
 
 ```c
-int add(int a, int b) {
-    int result;
-    result = a + b;
-    return result;
+int add(int a, int b)
+{
+    return a + b;
 }
 
-int main() {
-    int x;
-    x = add(10, 32);
-    return x;
+int main()
+{
+    return add(15, 8);
 }
 ```
 
-## Documentation Structure
+## Important Current Limits
 
-- **[README.md](README.md)** - This file; quick overview
-- **[ARCHITECTURE.md](ARCHITECTURE.md)** - Detailed compiler design and pipeline
-- **[TOKENS.md](TOKENS.md)** - Token types and AST node reference
-- **[GRAMMAR.md](GRAMMAR.md)** - BNF-like grammar of supported C subset
-- **[USAGE.md](USAGE.md)** - Practical examples and workflows
+- CLI takes exactly one argument: `./mncc <path>`
+- Output filename cannot be configured from CLI
+- No control-flow parsing (`if`, `else`, `while`, `for`)
+- No comparisons/logical operators
+- No unary minus expression handling
+- No parenthesized expression handling
+- Declaration without initializer (example: `int x;`) is not accepted by parser
+- Standalone call statement (example: `foo();`) is parsed but not generated
+- Parser/codegen failures are printed, but the process currently may still exit with `0` due to missing error propagation in `main.c`
 
-## Project Structure
+## Documentation
 
-```
-mncc/
-├── docs/              # Documentation
-│   ├── README.md
-│   ├── ARCHITECTURE.md
-│   ├── TOKENS.md
-│   ├── GRAMMAR.md
-│   └── USAGE.md
-├── include/           # Header files
-│   ├── main.h
-│   ├── lexer/
-│   │   ├── lexer.h
-│   │   └── token.h
-│   ├── parser/
-│   │   ├── parser.h
-│   │   └── node.h
-│   └── utils/
-├── src/               # Source code
-│   ├── main.c
-│   ├── lexer/
-│   ├── parser/
-│   ├── codegen/
-│   └── utils/
-├── tests/             # Test suite
-├── Makefile
-└── .git/
-```
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+- [docs/GRAMMAR.md](docs/GRAMMAR.md)
+- [docs/TOKENS.md](docs/TOKENS.md)
+- [docs/USAGE.md](docs/USAGE.md)
 
-## Building
+## Error Codes Defined In Headers
 
-```bash
-make                  # Build mncc binary
-make clean            # Remove object files
-make fclean           # Clean everything
-make re               # Rebuild from scratch
-make tests            # Run test suite
-```
+- `0`: SUCCESS
+- `84`: ERROR
+- `100`: ELEX
+- `101`: EPAR
+- `102`: EINP
+- `103`: EGEN
 
-## Limitations
-
-- **No control flow**: `if`, `else`, `while` not supported
-- **No comparisons**: `<`, `>`, `<=`, `>=`, `==`, `!=` not supported
-- **No logical operators**: `&&`, `||`, `!` not supported  
-- **No preprocessor**: `#include`, `#define`
-- **No pointers or arrays**: Limited to basic types
-- **No struct/union types**
-- **No standard library**: No I/O functions
-
-## Next Steps
-
-1. Read [ARCHITECTURE.md](docs/ARCHITECTURE.md) for compiler design details
-2. Check [TOKENS.md](docs/TOKENS.md) for complete token and AST node reference
-3. Review [GRAMMAR.md](docs/GRAMMAR.md) for language grammar
-4. See [USAGE.md](docs/USAGE.md) for practical compilation examples
-
-## Error Codes
-
-- `0` - SUCCESS
-- `84` - GENERAL ERROR
-- `100` (ELEX) - Lexer error
-- `101` (EPAR) - Parser error
-- `102` (EINP) - Input error
-- `103` (EGEN) - Code generation error
+Note: these codes are used internally by modules, but the top-level executable currently does not always propagate parse/codegen failures to its final exit code.

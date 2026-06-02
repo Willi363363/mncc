@@ -4,12 +4,10 @@
 ** File description:
 ** Data type parsing function
 */
-#include <errno.h>
 #include "lexer/token.h"
 #include "main.h"
 #include "parser/node.h"
 #include "parser/parser.h"
-#include "utils/array.h"
 #include "utils/utils.h"
 
 static data_type_t handle_pointer(parser_t *parser, data_type_t base_type)
@@ -31,6 +29,6 @@ data_type_t parse_data_type(parser_t *parser)
         parser_next(parser);
         return handle_pointer(parser, DATA_INT);
     }
-    get_error(EPAR, "expected a data type, got '%s'", token->value);
+    get_error(EPARSE, "expected a data type, got '%s'", token->value);
     return DATA_INVALID;
 }

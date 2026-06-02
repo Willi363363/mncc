@@ -4,9 +4,10 @@
 ** File description:
 ** Push an element to the end of a dynamic array
 */
+#include "main.h"
 #include "utils/array.h"
 
-int array_push(array_t *array, void *element)
+status_t array_push(array_t *array, void *element)
 {
     return array_insert(array, array->count, element);
 }

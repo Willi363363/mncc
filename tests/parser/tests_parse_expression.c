@@ -9,12 +9,13 @@
 #include <criterion/redirect.h>
 #include "lexer/lexer.h"
 #include "lexer/token.h"
+#include "parser/node.h"
 #include "parser/parser.h"
 #include "utils/array.h"
 
 Test(parser, parse_simple_expression)
 {
-    lexer_t *lexer = lexer_create();
+    lexer_t *lexer = lexer_create("");
     parser_t *parser = parser_create(lexer);
     node_t *node = NULL;
 
@@ -38,7 +39,7 @@ Test(parser, parse_simple_expression)
 
 Test(parser, parse_priority_expression)
 {
-    lexer_t *lexer = lexer_create();
+    lexer_t *lexer = lexer_create("");
     parser_t *parser = parser_create(lexer);
     node_t *node = NULL;
 

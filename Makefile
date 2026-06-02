@@ -15,6 +15,12 @@ LDFLAGS = -g
 ifdef DEBUG
 	CFLAGS += -g3
 endif
+ifdef PARSER_DEBUG
+	CFLAGS += -DMNCC_PARSER_DEBUG
+endif
+ifdef LEXER_DEBUG
+	CFLAGS += -DMNCC_LEXER_DEBUG
+endif
 
 NAME = mncc
 

@@ -4,7 +4,6 @@
 ** File description:
 ** Instruction parsing functions
 */
-#include <stdio.h>
 #include "lexer/token.h"
 #include "main.h"
 #include "parser/node.h"
@@ -47,7 +46,7 @@ static bool is_declaration(parser_t *parser, int size)
         parser->cursor = cursor;
         return false;
     }
-    if (parser_next(parser)->type == TOK_EQ)
+    if (parser_next(parser)->type == TOK_DEF)
         result = true;
     parser->cursor = cursor;
     return result;
@@ -63,7 +62,7 @@ static bool is_asignement(parser_t *parser, int size)
         parser->cursor = cursor;
         return false;
     }
-    if (parser_next(parser)->type == TOK_EQ)
+    if (parser_next(parser)->type == TOK_DEF)
         result = true;
     parser->cursor = cursor;
     return result;
@@ -86,6 +85,11 @@ static bool is_function_call(parser_t *parser)
     return result;
 }
 
+static bool is_block_instruction(node_type_t type)
+{
+    return type == NODE_BLOCK || type == NODE_IF || type == NODE_WHILE;
+}
+
 static node_t *get_instruction_node(parser_t *parser)
 {
     int size = get_instruction_size(parser);
@@ -93,14 +97,15 @@ static node_t *get_instruction_node(parser_t *parser)
 
     if (token->type == TOK_RETURN)
         return parse_return(parser);
+    if (token->type == TOK_IF)
+        return parse_if(parser);
     if (is_declaration(parser, size))
         return parse_declaration(parser);
     if (is_function_call(parser))
         return parse_call(parser);
     if (is_asignement(parser, size))
         return parse_assignment(parser);
-    get_error(EPAR, "expected instruction: got '%s'", token->value);
-    return NULL;
+    return print_error(EPARSE, "expected instruction: got '%s'", token->value);
 }
 
 node_t *parse_instruction(parser_t *parser)
@@ -108,19 +113,16 @@ node_t *parse_instruction(parser_t *parser)
     token_t *token = parser_peek(parser);
     node_t *node = NULL;
 
-    if (!token) {
-        get_error(EPAR, "could not parse instruction: unexpected end of file");
-        return NULL;
-    }
+    if (!token)
+        return print_error(
+            EPARSE, "could not parse instruction: unexpected end of file");
     node = get_instruction_node(parser);
-    if (!node)
-        return NULL;
+    if (!node || is_block_instruction(node->type))
+        return node;
     if (!parser_match(parser, TOK_SEMI)) {
         node_destroy(node);
-        get_error(EPAR,
-            "expected semicolon, got '%s'",
-            parser_peek(parser)->value);
-        return NULL;
+        return print_error(
+            EPARSE, "expected semicolon, got '%s'", parser_peek(parser)->value);
     }
     parser->cursor++;
     return node;

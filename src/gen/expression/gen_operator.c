@@ -4,45 +4,65 @@
 ** File description:
 ** Generation of operator nodes to assembly code
 */
-#include <stdio.h>
 #include "gen/gen.h"
 #include "main.h"
 #include "parser/node.h"
 #include "utils/utils.h"
 
-static char *get_operator_str(operator_type_t op)
+static void calculate_right_left(gen_t *gen, node_t *node)
 {
-    switch (op) {
-        case OP_ADD:
-            return "add";
-        case OP_SUB:
-            return "sub";
-        case OP_MUL:
-            return "imul";
-        case OP_DIV:
-            return "idiv";
-        default:
-            return NULL;
+    bool right_inline =
+        node->right->type == NODE_CONST || node->right->type == NODE_VAR;
+
+    if (!right_inline) {
+        gen_expression(gen, node->right);
+        gen->write(gen, "push %s", gen_get_register(0));
     }
+    gen_expression(gen, node->left);
+    if (right_inline)
+        gen_value_in_register(gen, node->right, 1);
+    else
+        gen->write(gen, "pop %s", gen_get_register(1));
 }
 
-int gen_operator(gen_t *gen, node_t *node)
+static status_t gen_eq_operator(gen_t *gen)
 {
-    char *op_str = get_operator_str(node->op);
-
-    if (!op_str) {
-        get_error(EGEN, "invalid operator in code generation");
-        return ERROR;
-    }
-    gen_expression(gen, node->right);
-    fprintf(gen->out, "    push rax\n");
-    gen_expression(gen, node->left);
-    fprintf(gen->out, "    pop rbx\n");
-    if (node->op == OP_DIV) {
-        fprintf(gen->out, "    xor rdx, rdx\n");
-        fprintf(gen->out, "    div rbx\n");
-        return SUCCESS;
-    }
-    fprintf(gen->out, "    %s rax, rbx\n", op_str);
+    gen->write(gen, "cmp rax, rbx");
+    gen->write(gen, "sete al");
+    gen->write(gen, "movzx rax, al");
     return SUCCESS;
+}
+
+static status_t gen_div_operator(gen_t *gen)
+{
+    gen->write(gen, "xor rdx, rdx");
+    gen->write(gen, "div rbx");
+    return SUCCESS;
+}
+
+static status_t gen_basic_operator(gen_t *gen, char *str)
+{
+    gen->write(gen, "%s rax, rbx", str);
+    return SUCCESS;
+}
+
+status_t gen_operator(gen_t *gen, node_t *node)
+{
+    calculate_right_left(gen, node);
+    switch (node->op) {
+        case OP_ADD:
+            return gen_basic_operator(gen, "add");
+        case OP_SUB:
+            return gen_basic_operator(gen, "sub");
+        case OP_MUL:
+            return gen_basic_operator(gen, "imul");
+        case OP_DIV:
+            return gen_div_operator(gen);
+        case OP_EQ:
+            return gen_eq_operator(gen);
+        default:
+            return get_error(EGEN,
+                "unsupported operator type in expression: '%s'",
+                node->name);
+    }
 }

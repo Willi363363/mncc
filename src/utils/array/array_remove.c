@@ -4,15 +4,14 @@
 ** File description:
 ** Remove an element from a dynamic array at a specific index
 */
-#include "utils/array.h"
 #include "main.h"
+#include "utils/array.h"
 
-int array_remove(array_t *array, int index)
+status_t array_remove(array_t *array, size_t index)
 {
-    index = format_array_index(array, index, 1);
-    if (index < 0 || index >= array->count)
-        return ERROR;
-    for (int i = index; i < array->count - 1; i++)
+    if (index >= array->count)
+        return EMEM;
+    for (size_t i = index; i < array->count - 1; i++)
         array->data[i] = array->data[i + 1];
     array->count--;
     array->data[array->count] = NULL;

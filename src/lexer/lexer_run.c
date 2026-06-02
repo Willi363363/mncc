@@ -1,23 +1,28 @@
 /*
 ** EPITECH PROJECT, 2026
-** mncc
+** lexer_run.c
 ** File description:
-** Run the lexer and print the tokens
+** Run lexer tokenization
 */
-
-#include "main.h"
-#include "utils/utils.h"
-#include "lexer/token.h"
+#include "lexer/extract.h"
 #include "lexer/lexer.h"
-#include <stdio.h>
-#include <stdlib.h>
+#include "lexer/token.h"
+#include "main.h"
 
-int lexer_run(char *buffer, lexer_t *lexer)
+status_t lexer_run(lexer_t *lexer)
 {
-    if (lexer_tokenize(lexer, buffer) == ERROR) {
-        free(buffer);
-        return ERROR;
+    if (!lexer || !lexer->input)
+        return ELEX;
+    while (lexer->input[lexer->pos]) {
+        if (lexer_skip_ignored(lexer))
+            continue;
+        if (lexer_extract(lexer) != SUCCESS)
+            return ELEX;
     }
-    free(buffer);
+    if (lexer_push_token(lexer, TOK_EOF, NULL) != SUCCESS)
+        return ELEX;
+#ifdef MNCC_LEXER_DEBUG
+    lexer_print(lexer);
+#endif
     return SUCCESS;
 }

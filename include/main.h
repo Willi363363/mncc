@@ -1,18 +1,24 @@
 /*
 ** EPITECH PROJECT, 2026
-** mncc
+** main.h
 ** File description:
-** main
+** Main header file, containing common definitions
 */
 
 #ifndef MAIN_H_
     #define MAIN_H_
-    #define ELEX (int)(100)
-    #define EPAR (int)(101)
-    #define EGEN (int)(103)
-    #define EINP (int)(102)
-    #define SUCCESS (int)(0)
-    #define ERROR (int)(84)
     #define STDERR (int)(2)
     #define STDOUT (int)(1)
+    #define NOIDX (ssize_t)(-1)
+    #include <asm-generic/errno-base.h>
+
+typedef enum status_e {
+    SUCCESS,
+    ELEX,
+    EPARSE,
+    EGEN,
+    EMEM,
+    EIMP
+} status_t;
+
 #endif /* !MAIN_H_ */

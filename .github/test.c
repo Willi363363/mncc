@@ -5,14 +5,24 @@
 ** Test file for the MNCC project
 */
 
-#include <stdio.h>
-
-int add(int a, int b)
+int pow_recursive(int a, int b, int result)
 {
-    return a + b;
+    if (b == 0)
+        return result;
+
+    b = b - 1;
+    result = result * a;
+    return pow_recursive(a, b, result);
+}
+
+int my_pow(int num, int x)
+{
+    return pow_recursive(num, x, 1);
 }
 
 int main()
 {
-    return add(15, 8);
+    int a = my_pow(3, 4);
+
+    return a + 4;
 }

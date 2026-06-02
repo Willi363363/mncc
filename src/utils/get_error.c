@@ -1,43 +1,73 @@
 /*
 ** EPITECH PROJECT, 2026
-** mncc
-** File description:
 ** get_error.c
+** File description:
+** Print an error message to stderr based on the provided error code
 */
-
-#include "main.h"
-#include <stdio.h>
 #include <errno.h>
 #include <stdarg.h>
-#include <string.h>
+#include <stdio.h>
+#include "main.h"
+#include "utils/utils.h"
 
 static void print_error_code(int code)
 {
-    if (code < ELEX || code > EGEN) {
-        errno = code;
-        perror("Error");
+    switch (code) {
+        case ELEX:
+            fprintf(stderr, "Lexer error");
+            break;
+        case EPARSE:
+            fprintf(stderr, "Parser error");
+            break;
+        case EGEN:
+            fprintf(stderr, "Generation error");
+            break;
+        case EMEM:
+            fprintf(stderr, "Memory error");
+            break;
+        default:
+            errno = code;
+            fprintf(stderr, "Error");
     }
-    if (code == EINP)
-        fprintf(stderr, "Implementation error");
-    if (code == ELEX)
-        fprintf(stderr, "Lexer error");
-    if (code == EPAR)
-        fprintf(stderr, "Parser error");
-    if (code == EGEN)
-        fprintf(stderr, "Generation error");
 }
 
-int get_error(int code, const char *message, ...)
+static void print_error_vargs(status_t code, const char *message, va_list *args)
+{
+    print_error_code(code);
+    fprintf(stderr, ": ");
+    if (message && args)
+        vfprintf(stderr, message, *args);
+    fprintf(stderr, "\n");
+    fflush(stderr);
+}
+
+status_t get_error(status_t code, const char *message, ...)
 {
     va_list args;
+    va_list *args_ptr = NULL;
 
-    print_error_code(code);
-    if (message && *message) {
-        fprintf(stderr, (code < ELEX || code > EGEN) ? "At: " : ": ");
+    if (message) {
         va_start(args, message);
-        vfprintf(stderr, message, args);
-        va_end(args);
+        args_ptr = &args;
     }
-    fprintf(stderr, "\n");
+    print_error_vargs(code, message, args_ptr);
+    if (message)
+        va_end(args);
     return code;
+}
+
+void *print_error(status_t code, const char *message, ...)
+{
+    va_list args;
+    va_list *args_ptr = NULL;
+
+    if (message) {
+        va_start(args, message);
+        args_ptr = &args;
+    }
+    print_error_vargs(code, message, args_ptr);
+    if (message)
+        va_end(args);
+    fprintf(stderr, "\n");
+    return NULL;
 }

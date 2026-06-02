@@ -1,8 +1,8 @@
 /*
 ** EPITECH PROJECT, 2026
-** mncc
+** token_destroy.c
 ** File description:
-** Creates a new token instance
+** Destruction of token instances and memory cleanup
 */
 
 #include <stdlib.h>

@@ -4,21 +4,18 @@
 ** File description:
 ** Assignment instruction parsing function with static helpers
 */
-#include <errno.h>
-#include <stdio.h>
 #include "lexer/token.h"
 #include "main.h"
 #include "parser/node.h"
 #include "parser/parser.h"
-#include "utils/array.h"
 #include "utils/utils.h"
 
 static int parse_lhs(parser_t *parser, node_t *assign_node)
 {
-    node_t *lhs = parse_expression(parser);
+    node_t *lhs = parse_expression_with_size(parser, 1);
 
     if (!lhs)
-        return get_error(ENOMEM, "parser assignment node allocation");
+        return get_error(EMEM, "parser assignment node allocation");
     assign_node->left = lhs;
     return SUCCESS;
 }
@@ -28,7 +25,7 @@ static int parse_rhs(parser_t *parser, node_t *assign_node)
     node_t *rhs = parse_expression(parser);
 
     if (!rhs)
-        return get_error(ENOMEM, "parser assignment node allocation");
+        return get_error(EMEM, "parser assignment node allocation");
     assign_node->right = rhs;
     return SUCCESS;
 }
@@ -43,10 +40,10 @@ node_t *parse_assignment(parser_t *parser)
         node_destroy(node);
         return NULL;
     }
-    if (!parser_match(parser, TOK_EQ)) {
+    if (!parser_match(parser, TOK_DEF)) {
         node_destroy(node);
-        get_error(EPAR, "expected '=' got '%s'", parser_peek(parser)->value);
-        return NULL;
+        return print_error(
+            EPARSE, "expected '=' got '%s'", parser_peek(parser)->value);
     }
     parser->cursor++;
     if (parse_rhs(parser, node) != SUCCESS) {

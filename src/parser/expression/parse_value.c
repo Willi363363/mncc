@@ -2,16 +2,14 @@
 ** EPITECH PROJECT, 2026
 ** parse_value.c
 ** File description:
-** Value expression parsing function
+** Parsing of value nodes, which can be either constants or variables
 */
-#include <errno.h>
 #include <stdlib.h>
 #include <string.h>
 #include "lexer/token.h"
 #include "main.h"
 #include "parser/node.h"
 #include "parser/parser.h"
-#include "utils/array.h"
 #include "utils/utils.h"
 
 static node_t *create_const_node(parser_t *parser)
@@ -19,10 +17,8 @@ static node_t *create_const_node(parser_t *parser)
     token_t *token = parser_peek(parser);
     node_t *node = node_create(NODE_CONST);
 
-    if (!node) {
-        get_error(ENOMEM, NULL, "parser const node allocation");
-        return NULL;
-    }
+    if (!node)
+        return print_error(EMEM, NULL, "parser const node allocation");
     node->value = atoi(token->value);
     parser->cursor++;
     return node;
@@ -33,16 +29,13 @@ static node_t *create_var_node(parser_t *parser)
     token_t *token = parser_peek(parser);
     node_t *node = node_create(NODE_VAR);
 
-    if (!node) {
-        get_error(ENOMEM, NULL, "parser var node allocation");
-        return NULL;
-    }
+    if (!node)
+        return print_error(EMEM, NULL, "parser var node allocation");
     node->name = strdup(token->value);
     parser->cursor++;
     if (!node->name) {
         node_destroy(node);
-        get_error(ENOMEM, NULL, "parser var name allocation");
-        return NULL;
+        return print_error(EMEM, NULL, "parser var name allocation");
     }
     return node;
 }
@@ -59,12 +52,10 @@ static node_t *get_value_node(parser_t *parser)
         node = parse_call(parser);
     else if (token->type == TOK_IDENT)
         node = create_var_node(parser);
-    if (!node) {
-        get_error(EPAR,
+    if (!node)
+        return print_error(EPARSE,
             "expected a number or an identifier, got '%s'",
             token->value);
-        return NULL;
-    }
     return node;
 }
 
@@ -73,11 +64,9 @@ node_t *parse_value(parser_t *parser)
     token_t *token = parser_peek(parser);
     node_t *node = NULL;
 
-    if (!token) {
-        get_error(EPAR,
-            "expected a number or an identifier, but got end of input");
-        return NULL;
-    }
+    if (!token)
+        return print_error(
+            EPARSE, "expected a number or an identifier, but got end of input");
     node = get_value_node(parser);
     if (!node)
         return NULL;

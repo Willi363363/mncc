@@ -17,6 +17,7 @@ parser_t *parser_create(lexer_t *lexer)
         return NULL;
     parser->lexer = lexer;
     parser->cursor = 0;
+    parser->id_counter = 0;
     parser->nodes = array_create((array_element_destroy_t)node_destroy);
     if (!parser->nodes) {
         free(parser);

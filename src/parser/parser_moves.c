@@ -4,9 +4,10 @@
 ** File description:
 ** Parser token navigation and matching functions
 */
+#include <stddef.h>
 #include "parser/parser.h"
 
-token_t *parser_at(parser_t *p, int index)
+token_t *parser_at(parser_t *p, size_t index)
 {
     if (p->lexer->tokens->count <= index)
         return NULL;
@@ -32,4 +33,13 @@ bool parser_match(parser_t *p, token_type_t type)
     token_t *tok = parser_peek(p);
 
     return tok && tok->type == type;
+}
+
+token_t **parser_tokens_peek(parser_t *p)
+{
+    size_t index = p->cursor;
+
+    if (p->lexer->tokens->count <= index)
+        return NULL;
+    return (token_t **)p->lexer->tokens->data + index;
 }

@@ -4,7 +4,6 @@
 ** File description:
 ** Assignment instruction parsing function with static helpers
 */
-#include <errno.h>
 #include <stdio.h>
 #include <string.h>
 #include "lexer/token.h"
@@ -17,22 +16,17 @@ static node_t *handle_empty_declaration(parser_t *parser)
 {
     node_t *node = node_create(NODE_DECLARATION);
 
-    if (!node) {
-        get_error(ENOMEM, "parser declaration node allocation");
-        return NULL;
-    }
+    if (!node)
+        return print_error(EMEM, "parser declaration node allocation");
     if (!parser_match(parser, TOK_IDENT)) {
         node_destroy(node);
-        get_error(EPAR,
-            "expected variable, got '%s'",
-            parser_peek(parser)->value);
-        return NULL;
+        return print_error(
+            EPARSE, "expected variable, got '%s'", parser_peek(parser)->value);
     }
     node->name = strdup(parser_peek(parser)->value);
     if (!node->name) {
         node_destroy(node);
-        get_error(ENOMEM, "parser declaration name allocation");
-        return NULL;
+        return print_error(EMEM, "parser declaration name allocation");
     }
     return node;
 }
@@ -44,7 +38,7 @@ node_t *parse_declaration(parser_t *parser)
 
     if (type == DATA_INVALID)
         return NULL;
-    if (parser_at(parser, parser->cursor + 1)->type == TOK_EQ) {
+    if (parser_at(parser, parser->cursor + 1)->type == TOK_DEF) {
         node = parse_assignment(parser);
         printf("Parsed assignement with name '%s'\n", node->left->name);
     } else {

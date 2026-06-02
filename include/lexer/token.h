@@ -1,8 +1,8 @@
 /*
 ** EPITECH PROJECT, 2026
-** token.h
+** lexer/token.h
 ** File description:
-** Token structure definition
+** Lexer token header file
 */
 
 #ifndef TOKEN_H
@@ -11,7 +11,10 @@
 typedef enum token_type_e {
     // data types
     TOK_INT,
+
+    // data literals
     TOK_NUMBER,
+    TOK_STR,
 
     // keywords
     TOK_RETURN,
@@ -25,7 +28,8 @@ typedef enum token_type_e {
     TOK_IDENT,
 
     // operators
-    TOK_EQ,         // =
+    TOK_EQ,         // ==
+    TOK_DEF,         // =
     TOK_PLUS,       // +
     TOK_MINUS,      // -
     TOK_MUL,        // *

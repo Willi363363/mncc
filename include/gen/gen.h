@@ -1,13 +1,13 @@
 /*
 ** EPITECH PROJECT, 2026
-** mncc
+** gen.h
 ** File description:
-** gen
+** Header file for the asm generation module
 */
-
 #ifndef GEN_H
     #define GEN_H
     #include <stdio.h>
+    #include "main.h"
     #include "parser/parser.h"
     #include "utils/array.h"
 
@@ -26,25 +26,26 @@ typedef struct gen_s {
 } gen_t;
 
 gen_t *gen_create(char *filename, parser_t *parser);
-int gen_run(gen_t *gen);
+status_t gen_run(gen_t *gen);
+status_t gen_header(gen_t *gen);
+status_t gen_function(gen_t *gen, node_t *node);
 void gen_destroy(gen_t *gen);
-int gen_header(gen_t *gen);
-int gen_function(gen_t *gen, node_t *node);
 
 // instruction generation
-int gen_instruction(gen_t *gen, node_t *node);
-int gen_declaration(gen_t *gen, node_t *node);
-int gen_assignement(gen_t *gen, node_t *node);
-int gen_return(gen_t *gen, node_t *node);
-int gen_block(gen_t *gen, node_t *node);
-int gen_call(gen_t *gen, node_t *node);
-int gen_if(gen_t *gen, node_t *node);
+status_t gen_instruction(gen_t *gen, node_t *node);
+status_t gen_declaration(gen_t *gen, node_t *node);
+status_t gen_assignement(gen_t *gen, node_t *node);
+status_t gen_return(gen_t *gen, node_t *node);
+status_t gen_block(gen_t *gen, node_t *node);
+status_t gen_call(gen_t *gen, node_t *node);
+status_t gen_if(gen_t *gen, node_t *node);
 
 // expression generation
-int gen_expression(gen_t *gen, node_t *node);
-int gen_value_in_register(gen_t *gen, node_t *node, int i);
-int gen_operator(gen_t *gen, node_t *node);
+status_t gen_expression(gen_t *gen, node_t *node);
+status_t gen_value_in_register(gen_t *gen, node_t *node, int i);
+status_t gen_operator(gen_t *gen, node_t *node);
 
 const char *gen_get_register(int i);
+ssize_t gen_get_var_offset(gen_t *gen, const char *name);
 
 #endif /* !GEN_H */

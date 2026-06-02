@@ -1,6 +1,6 @@
 /*
 ** EPITECH PROJECT, 2026
-** node.h
+** parser/node.h
 ** File description:
 ** Parser node header file
 */
@@ -8,7 +8,6 @@
     #define NODE_H
     #include "utils/array.h"
     #include "lexer/token.h"
-    #define OPERATOR_COUNT 5
     #define DATA_TYPE_COUNT 2
 
 typedef enum data_type_e {
@@ -18,19 +17,20 @@ typedef enum data_type_e {
 } data_type_t;
 
 typedef enum operator_type_e {
-    OP_EQUAL,
+    OP_DEF,
+    OP_EQ,
     OP_ADD,
     OP_SUB,
     OP_MUL,
     OP_DIV,
-    OP_INVALID
+    OP_COUNT,
+    OP_NONE
 } operator_type_t;
 
 typedef struct operator_mapping_s {
     operator_type_t op;
-    token_type_t tokens[3];
+    token_type_t token;
 } operator_mapping_t;
-
 
 typedef enum node_type_e {
     // instructions
@@ -48,7 +48,9 @@ typedef enum node_type_e {
     NODE_OPERATOR,
 
     // both
-    NODE_CALL
+    NODE_CALL,
+    NODE_COUNT,
+    NODE_NONE
 } node_type_t;
 
 typedef struct node_s {
@@ -65,6 +67,11 @@ typedef struct node_s {
 
     array_t *childs;
 } node_t;
+
+typedef struct node_debug_s {
+    node_type_t type;
+    const char *name;
+} node_debug_t;
 
 node_t *node_create(node_type_t type);
 void node_destroy(node_t *node);

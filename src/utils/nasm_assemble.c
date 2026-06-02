@@ -1,26 +1,24 @@
 /*
 ** EPITECH PROJECT, 2026
-** mncc
+** nasm_assemble.c
 ** File description:
-** exec
+** Function to execute the assemble.sh script to assemble the generated assembly
 */
-
-#include <unistd.h>
-#include <sys/wait.h>
 #include <stdlib.h>
+#include <sys/wait.h>
+#include <unistd.h>
 #include "main.h"
 #include "utils/utils.h"
-#include <stdio.h>
 
-int nasm_assemble(char const *path)
+status_t nasm_assemble(char const *path)
 {
     pid_t pid = 0;
     int status = 0;
     char *argv[] = {"sh", "./assemble.sh", (char *)path, NULL};
 
     if (!path)
-        return get_error(EGEN, "Null path sent for execution%s",
-            "\nAt: nasm_assemble");
+        return get_error(
+            EGEN, "Null path sent for execution%s", "\nAt: nasm_assemble");
     pid = fork();
     if (pid == -1)
         return get_error(EGEN, "fork failed");

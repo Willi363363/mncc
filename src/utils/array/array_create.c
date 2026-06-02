@@ -15,13 +15,13 @@ array_t *array_create(array_element_destroy_t destroy_element)
         return NULL;
     array->destroy_element = destroy_element;
     array->count = 0;
-    array->capacity = 4;
+    array->capacity = ARRAY_INITIAL_CAPACITY;
     array->data = malloc(sizeof(void *) * array->capacity);
     if (array->data == NULL) {
         free(array);
         return NULL;
     }
-    for (int i = 0; i < array->capacity; i++)
+    for (size_t i = 0; i < array->capacity; i++)
         array->data[i] = NULL;
     return array;
 }

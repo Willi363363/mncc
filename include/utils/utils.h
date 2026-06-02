@@ -7,8 +7,10 @@
 
 #ifndef UTILS_H_
     #define UTILS_H_
+    #include "main.h"
 
-int get_error(int code, const char *message, ...);
-int nasm_assemble(char const *path);
+status_t get_error(status_t code, const char *message, ...);
+void *print_error(status_t code, const char *message, ...);
+status_t nasm_assemble(char const *path);
 
 #endif /* !UTILS_H_ */

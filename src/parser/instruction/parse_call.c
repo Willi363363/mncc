@@ -4,7 +4,6 @@
 ** File description:
 ** Call instruction parsing function with static helpers
 */
-#include <errno.h>
 #include <string.h>
 #include "lexer/token.h"
 #include "main.h"
@@ -18,7 +17,7 @@ static char *handle_call_name(parser_t *parser, node_t *node)
 
     if (!parser_match(parser, TOK_IDENT)) {
         node_destroy(node);
-        get_error(EPAR,
+        get_error(EPARSE,
             "expected function name identifier, got '%s'",
             parser_peek(parser)->value);
         return NULL;
@@ -27,8 +26,7 @@ static char *handle_call_name(parser_t *parser, node_t *node)
     parser->cursor++;
     if (!name) {
         node_destroy(node);
-        get_error(ENOMEM, "parser call name allocation");
-        return NULL;
+        return print_error(EMEM, "parser call name allocation");
     }
     return name;
 }
@@ -41,10 +39,10 @@ static bool handle_call_argument(parser_t *parser, node_t *node)
         node_destroy(node);
         return false;
     }
-    if (array_push(node->childs, arg) == ERROR) {
+    if (array_push(node->childs, arg) != SUCCESS) {
         node_destroy(arg);
         node_destroy(node);
-        get_error(ENOMEM, "parser call argument implementation");
+        get_error(EMEM, "parser call argument implementation");
         return false;
     }
     return true;
@@ -54,15 +52,14 @@ static int handle_call_arguments(parser_t *parser, node_t *node)
 {
     if (!parser_match(parser, TOK_LPAREN)) {
         node_destroy(node);
-        return get_error(EPAR,
-            "expected '(', got '%s'",
-            parser_peek(parser)->value);
+        return get_error(
+            EPARSE, "expected '(', got '%s'", parser_peek(parser)->value);
     }
     parser->cursor++;
     while (!parser_match(parser, TOK_RPAREN)) {
         if (!handle_call_argument(parser, node)) {
             node_destroy(node);
-            return EPAR;
+            return EPARSE;
         }
         if (parser_match(parser, TOK_COMMA))
             parser->cursor++;
@@ -75,10 +72,8 @@ node_t *parse_call(parser_t *parser)
 {
     node_t *node = node_create(NODE_CALL);
 
-    if (!node) {
-        get_error(ENOMEM, "parser call node allocation");
-        return NULL;
-    }
+    if (!node)
+        return print_error(EMEM, "parser call node allocation");
     node->name = handle_call_name(parser, node);
     if (!node->name)
         return NULL;

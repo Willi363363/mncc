@@ -9,7 +9,7 @@
 #include "parser/node.h"
 #include "utils/utils.h"
 
-int gen_expression(gen_t *gen, node_t *node)
+status_t gen_expression(gen_t *gen, node_t *node)
 {
     switch (node->type) {
         case NODE_CONST:
@@ -20,9 +20,8 @@ int gen_expression(gen_t *gen, node_t *node)
         case NODE_CALL:
             return gen_call(gen, node);
         default:
-            return get_error(EGEN,
-                "unsupported node type in expression: '%s'",
-                node->name);
+            return get_error(
+                EGEN, "unsupported node type in expression: '%s'", node->name);
     }
     return SUCCESS;
 }

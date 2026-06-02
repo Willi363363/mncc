@@ -4,7 +4,7 @@
 ** File description:
 ** If instruction parsing function
 */
-#include <errno.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "lexer/token.h"
@@ -14,39 +14,34 @@
 #include "utils/array.h"
 #include "utils/utils.h"
 
-static int extract_if_expression(parser_t *parser, node_t *if_node)
+static status_t extract_if_expression(parser_t *parser, node_t *if_node)
 {
     node_t *expr = NULL;
 
-    if (!parser_match(parser, TOK_LPAREN)) {
-        get_error(EPAR, "expected '(' after 'if'");
-        return ERROR;
-    }
+    if (!parser_match(parser, TOK_LPAREN))
+        return get_error(EPARSE, "expected '(' after 'if'");
     parser->cursor++;
     expr = parse_expression(parser);
-    if (!expr) {
-        get_error(EPAR, "invalid expression in 'if' statement");
-        return ERROR;
-    }
+    if (!expr)
+        return get_error(EPARSE, "invalid expression in 'if' statement");
     if (!parser_match(parser, TOK_RPAREN)) {
         node_destroy(expr);
-        get_error(EPAR, "expected ')' after 'if' condition");
-        return ERROR;
+        return get_error(EPARSE,
+            "expected ')' after 'if' condition, got '%s'",
+            parser_peek(parser) ? parser_peek(parser)->value : "end of input");
     }
     parser->cursor++;
     array_push(if_node->childs, expr);
     return SUCCESS;
 }
 
-static int extract_if_body(parser_t *parser, node_t *if_node)
+static status_t extract_if_body(parser_t *parser, node_t *if_node)
 {
     node_t *body = NULL;
 
     body = parse_block(parser);
-    if (!body) {
-        get_error(EPAR, "invalid block in 'if' statement");
-        return ERROR;
-    }
+    if (!body)
+        return get_error(EPARSE, "invalid block in 'if' statement");
     array_push(if_node->childs, body);
     return SUCCESS;
 }
@@ -56,27 +51,25 @@ static char *get_name(parser_t *parser)
     int id = parser->id_counter;
     char *name = malloc(sizeof(char) * 20);
 
-    if (!name) {
-        get_error(ENOMEM, "parser 'if' node name allocation");
-        return NULL;
-    }
+    if (!name)
+        return print_error(EMEM, "parser 'if' node name allocation");
     sprintf(name, "if_%d", id);
     parser->id_counter++;
     return name;
 }
 
-static int init_if_block(parser_t *parser, node_t *node)
+static status_t init_if_block(parser_t *parser, node_t *node)
 {
     if (parser_next(parser)->type != TOK_LPAREN) {
         node_destroy(node);
-        return get_error(EPAR,
+        return get_error(EPARSE,
             "expected '(' after 'if', got '%s'",
             parser_peek(parser) ? parser_peek(parser)->value : "end of input");
     }
     node->name = get_name(parser);
     if (!node->name) {
         node_destroy(node);
-        return ERROR;
+        return EPARSE;
     }
     return SUCCESS;
 }

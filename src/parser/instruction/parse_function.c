@@ -2,10 +2,8 @@
 ** EPITECH PROJECT, 2026
 ** parse_function.c
 ** File description:
-** tokens parsing :
+** Function instruction parsing function with static helpers
 */
-#include <errno.h>
-#include <stdio.h>
 #include <string.h>
 #include "lexer/token.h"
 #include "main.h"
@@ -19,8 +17,8 @@ static int handle_data_type(parser_t *parser, node_t *node)
     node->data_type = parse_data_type(parser);
     if (node->data_type == DATA_INVALID) {
         node_destroy(node);
-        get_error(EPAR, "expected a data type at the beginning of function");
-        return EPAR;
+        return get_error(
+            EPARSE, "expected a data type at the beginning of function");
     }
     return SUCCESS;
 }
@@ -29,17 +27,15 @@ static int handle_function_name(parser_t *parser, node_t *node)
 {
     if (!parser_match(parser, TOK_IDENT)) {
         node_destroy(node);
-        get_error(EPAR,
+        return get_error(EPARSE,
             "expected function name identifier, got '%s'",
             parser_peek(parser)->value);
-        return EPAR;
     }
     node->name = strdup(parser_peek(parser)->value);
     parser->cursor++;
     if (!node->name) {
         node_destroy(node);
-        get_error(ENOMEM, "parser function name allocation");
-        return ENOMEM;
+        return get_error(EMEM, "parser function name allocation");
     }
     return SUCCESS;
 }
@@ -50,14 +46,12 @@ static node_t *handle_function_parameter(parser_t *parser, node_t *node)
 
     if (!param) {
         node_destroy(node);
-        get_error(EPAR, "invalid function parameter declaration");
-        return NULL;
+        return print_error(EPARSE, "invalid function parameter declaration");
     }
-    if (array_push(node->childs, param) == ERROR) {
+    if (array_push(node->childs, param) == EPARSE) {
         node_destroy(param);
         node_destroy(node);
-        get_error(ENOMEM, "parser function parameter implementation");
-        return NULL;
+        return print_error(EMEM, "parser function parameter implementation");
     }
     return param;
 }
@@ -65,17 +59,16 @@ static node_t *handle_function_parameter(parser_t *parser, node_t *node)
 static int handle_function_parameters(parser_t *parser, node_t *node)
 {
     if (!parser_match(parser, TOK_LPAREN))
-        return get_error(EPAR,
-            "expected '(', got '%s'",
-            parser_peek(parser)->value);
+        return get_error(
+            EPARSE, "expected '(', got '%s'", parser_peek(parser)->value);
     parser->cursor++;
     while (!parser_match(parser, TOK_RPAREN)) {
         if (handle_function_parameter(parser, node) == NULL)
-            return ERROR;
+            return EPARSE;
         if (parser_peek(parser)->type == TOK_RPAREN)
             break;
         if (!parser_match(parser, TOK_COMMA))
-            return get_error(EPAR,
+            return get_error(EPARSE,
                 "expected ',' or ')', got '%s'",
                 parser_peek(parser)->value);
         parser->cursor++;
@@ -90,14 +83,12 @@ static int handle_body(parser_t *parser, node_t *node)
 
     if (!body) {
         node_destroy(node);
-        get_error(EPAR, "invalid function body");
-        return ERROR;
+        return get_error(EPARSE, "invalid function body");
     }
-    if (array_push(node->childs, body) == ERROR) {
+    if (array_push(node->childs, body) != SUCCESS) {
         node_destroy(body);
         node_destroy(node);
-        get_error(ENOMEM, "parser function body implementation");
-        return ERROR;
+        return get_error(EMEM, "parser function body implementation");
     }
     return SUCCESS;
 }
@@ -106,15 +97,13 @@ node_t *parse_function(parser_t *parser)
 {
     node_t *node = node_create(NODE_FUNCTION);
 
-    if (!node) {
-        get_error(ENOMEM, "parser function node allocation");
-        return NULL;
-    }
+    if (!node)
+        return print_error(EMEM, "parser function node allocation");
     if (handle_data_type(parser, node) != SUCCESS)
         return NULL;
     if (handle_function_name(parser, node) != SUCCESS)
         return NULL;
-    if (handle_function_parameters(parser, node) != SUCCESS){
+    if (handle_function_parameters(parser, node) != SUCCESS) {
         node_destroy(node);
         return NULL;
     }

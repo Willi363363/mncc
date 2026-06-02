@@ -1,6 +1,6 @@
 /*
 ** EPITECH PROJECT, 2026
-** mncc
+** token_create.c
 ** File description:
 ** Creates a new token instance
 */

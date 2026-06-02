@@ -8,7 +8,7 @@
 #include "main.h"
 #include "parser/node.h"
 
-int gen_return(gen_t *gen, node_t *node)
+status_t gen_return(gen_t *gen, node_t *node)
 {
     if (node->childs->count == 0) {
         gen->write(gen, "mov rax, 0");

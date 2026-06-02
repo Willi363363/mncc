@@ -5,17 +5,17 @@
 ** Insert an element in a dynamic array at a specific index
 */
 #include <stdlib.h>
-#include "utils/array.h"
 #include "main.h"
+#include "utils/array.h"
 
-int realloc_array(array_t *array)
+status_t realloc_array(array_t *array)
 {
     int new_capacity = array->capacity * 2;
     void **new_data = calloc(new_capacity, sizeof(void *));
 
     if (new_data == NULL)
-        return ERROR;
-    for (int i = 0; i < array->count; i++)
+        return EMEM;
+    for (size_t i = 0; i < array->count; i++)
         new_data[i] = array->data[i];
     free(array->data);
     array->data = new_data;
@@ -23,14 +23,13 @@ int realloc_array(array_t *array)
     return SUCCESS;
 }
 
-int array_insert(array_t *array, int index, void *element)
+status_t array_insert(array_t *array, size_t index, void *element)
 {
-    index = format_array_index(array, index, 0);
     while (array->count + 1 >= array->capacity) {
-        if (realloc_array(array) == ERROR)
-            return ERROR;
+        if (realloc_array(array) != SUCCESS)
+            return EMEM;
     }
-    for (int i = array->count; i > index; i--)
+    for (size_t i = array->count; i > index; i--)
         array->data[i] = array->data[i - 1];
     array->data[index] = element;
     array->count++;

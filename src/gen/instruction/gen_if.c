@@ -8,7 +8,7 @@
 #include "main.h"
 #include "parser/node.h"
 
-int gen_if(gen_t *gen, node_t *node)
+status_t gen_if(gen_t *gen, node_t *node)
 {
     gen->write(gen, "; if statement");
     gen_expression(gen, node->childs->data[0]);

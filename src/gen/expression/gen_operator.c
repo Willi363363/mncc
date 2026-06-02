@@ -25,7 +25,7 @@ static void calculate_right_left(gen_t *gen, node_t *node)
         gen->write(gen, "pop %s", gen_get_register(1));
 }
 
-static int gen_equal_operator(gen_t *gen)
+static status_t gen_eq_operator(gen_t *gen)
 {
     gen->write(gen, "cmp rax, rbx");
     gen->write(gen, "sete al");
@@ -33,20 +33,20 @@ static int gen_equal_operator(gen_t *gen)
     return SUCCESS;
 }
 
-static int gen_div_operator(gen_t *gen)
+static status_t gen_div_operator(gen_t *gen)
 {
     gen->write(gen, "xor rdx, rdx");
     gen->write(gen, "div rbx");
     return SUCCESS;
 }
 
-static int gen_basic_operator(gen_t *gen, char *str)
+static status_t gen_basic_operator(gen_t *gen, char *str)
 {
     gen->write(gen, "%s rax, rbx", str);
     return SUCCESS;
 }
 
-int gen_operator(gen_t *gen, node_t *node)
+status_t gen_operator(gen_t *gen, node_t *node)
 {
     calculate_right_left(gen, node);
     switch (node->op) {
@@ -58,8 +58,8 @@ int gen_operator(gen_t *gen, node_t *node)
             return gen_basic_operator(gen, "imul");
         case OP_DIV:
             return gen_div_operator(gen);
-        case OP_EQUAL:
-            return gen_equal_operator(gen);
+        case OP_EQ:
+            return gen_eq_operator(gen);
         default:
             return get_error(EGEN,
                 "unsupported operator type in expression: '%s'",

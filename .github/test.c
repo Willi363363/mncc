@@ -4,7 +4,6 @@
 ** File description:
 ** Test file for the MNCC project
 */
-#include <stdio.h>
 
 int pow_recursive(int a, int b, int result)
 {
@@ -23,5 +22,7 @@ int my_pow(int num, int x)
 
 int main()
 {
-    return my_pow(3, 4);
+    int a = my_pow(3, 4);
+
+    return a + 4;
 }

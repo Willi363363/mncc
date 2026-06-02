@@ -13,29 +13,9 @@
 #include "parser/parser.h"
 #include "utils/array.h"
 
-Test(parser, token_match_operator_plus)
-{
-    token_t *tokens[3] = {token_create(TOK_PLUS, "+"),
-        token_create(TOK_EOF, NULL),
-        token_create(TOK_EOF, NULL)};
-    operator_type_t op = OP_ADD;
-
-    cr_assert(tokens_match_operator(tokens, op));
-}
-
-Test(parser, token_match_operator_equal)
-{
-    token_t *tokens[3] = {token_create(TOK_EQ, "="),
-        token_create(TOK_EQ, "="),
-        token_create(TOK_EOF, NULL)};
-    operator_type_t op = OP_EQUAL;
-
-    cr_assert(tokens_match_operator(tokens, op));
-}
-
 Test(parser, parse_simple_expression)
 {
-    lexer_t *lexer = lexer_create();
+    lexer_t *lexer = lexer_create("");
     parser_t *parser = parser_create(lexer);
     node_t *node = NULL;
 
@@ -59,7 +39,7 @@ Test(parser, parse_simple_expression)
 
 Test(parser, parse_priority_expression)
 {
-    lexer_t *lexer = lexer_create();
+    lexer_t *lexer = lexer_create("");
     parser_t *parser = parser_create(lexer);
     node_t *node = NULL;
 

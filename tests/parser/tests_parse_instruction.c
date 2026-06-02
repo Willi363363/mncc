@@ -15,7 +15,7 @@
 
 Test(parser, parse_simple_instruction)
 {
-    lexer_t *lexer = lexer_create();
+    lexer_t *lexer = lexer_create("");
     parser_t *parser = parser_create(lexer);
     node_t *node = NULL;
     node_t *block = NULL;
@@ -37,7 +37,7 @@ Test(parser, parse_simple_instruction)
 
 Test(parser, parse_function_declaration)
 {
-    lexer_t *lexer = lexer_create();
+    lexer_t *lexer = lexer_create("");
     parser_t *parser = parser_create(lexer);
     node_t *node = NULL;
     node_t *block = NULL;

@@ -4,15 +4,16 @@
 ** File description:
 ** Generation of block instruction node to assembly code
 */
+#include <stddef.h>
 #include "gen/gen.h"
 #include "main.h"
 #include "parser/node.h"
 
-int gen_block(gen_t *gen, node_t *node)
+status_t gen_block(gen_t *gen, node_t *node)
 {
-    for (int i = 0; i < node->childs->count; i++) {
+    for (size_t i = 0; i < node->childs->count; i++) {
         if (gen_instruction(gen, node->childs->data[i]) != SUCCESS)
-            return ERROR;
+            return EGEN;
     }
     return SUCCESS;
 }

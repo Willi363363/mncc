@@ -43,5 +43,5 @@ ssize_t get_expression_size(parser_t *parser)
         token = parser_peek(parser);
     }
     parser->cursor = cursor;
-    return depth < 0 ? NOIDX : size;
+    return depth < 0 ? NOIDX : (ssize_t)size;
 }

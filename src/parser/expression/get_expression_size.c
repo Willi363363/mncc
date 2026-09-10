@@ -15,7 +15,7 @@ static bool is_value_token(token_t *token)
         token->type == TOK_STR;
 }
 
-static bool is_expression_token(token_t *token, size_t *depth)
+static bool is_expression_token(token_t *token, long int *depth)
 {
     if (token->type == TOK_LPAREN) {
         (*depth)++;
@@ -35,7 +35,7 @@ ssize_t get_expression_size(parser_t *parser)
     size_t size = 0;
     size_t cursor = parser->cursor;
     token_t *token = parser_peek(parser);
-    size_t depth = 0;
+    long int depth = 0;
 
     while (token && is_expression_token(token, &depth)) {
         size++;

@@ -12,6 +12,12 @@
 #include "main.h"
 #include "utils/utils.h"
 
+static status_t log_error(status_t type, void *ptr, char *message)
+{
+    free(ptr);
+    return(get_error(type, message));
+}
+
 status_t lexer_extract_string(lexer_t *lexer)
 {
     size_t start = 0;
@@ -29,7 +35,7 @@ status_t lexer_extract_string(lexer_t *lexer)
         return get_error(ELEX, "unterminated string literal");
     str = strndup(lexer->input + start, lexer->pos - start);
     if (!str || lexer_push_token(lexer, TOK_STR, str) != SUCCESS)
-        return get_error(ELEX, "lexer string token allocation");
+        return log_error(ELEX, str, "lexer string token allocation");
     free(str);
     lexer->pos++;
     return SUCCESS;

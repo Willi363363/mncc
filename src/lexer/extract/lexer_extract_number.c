@@ -26,8 +26,10 @@ status_t lexer_extract_number(lexer_t *lexer)
         if (!isdigit(lexer->input[lexer->pos]))
             break;
     str = strndup(lexer->input + start, lexer->pos - start);
-    if (!str || lexer_push_token(lexer, TOK_NUMBER, str) != SUCCESS)
+    if (!str || lexer_push_token(lexer, TOK_NUMBER, str) != SUCCESS) {
+        free(str);
         return get_error(ELEX, "lexer number token allocation");
+    }
     free(str);
     return SUCCESS;
 }

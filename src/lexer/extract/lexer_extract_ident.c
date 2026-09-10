@@ -35,8 +35,10 @@ status_t lexer_extract_ident(lexer_t *lexer)
         if (!is_valid_char(lexer->input[lexer->pos], false))
             break;
     str = strndup(lexer->input + start, lexer->pos - start);
-    if (!str || lexer_push_token(lexer, TOK_IDENT, str) != SUCCESS)
+    if (!str || lexer_push_token(lexer, TOK_IDENT, str) != SUCCESS) {
+        free(str);
         return get_error(ELEX, "lexer number token allocation");
+    }
     free(str);
     return SUCCESS;
 }

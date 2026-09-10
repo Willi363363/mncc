@@ -43,6 +43,7 @@ static void gen_add_section_function(gen_t *gen, const char *str, ...)
     sprintf(comment, "; %s", str);
     gen_write_function_va(gen, comment, args);
     va_end(args);
+    free(comment);
 }
 
 static FILE *open_file(const char *filename)

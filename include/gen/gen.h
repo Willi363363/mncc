@@ -7,6 +7,7 @@
 #ifndef GEN_H
     #define GEN_H
     #include <stdio.h>
+    #include <sys/types.h>
     #include "main.h"
     #include "parser/parser.h"
     #include "utils/array.h"

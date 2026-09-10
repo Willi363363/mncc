@@ -16,7 +16,7 @@ static variable_t *create_variable(gen_t *gen, char *name)
     variable_t *data = malloc(sizeof(variable_t));
 
     if (!data)
-        print_error(EMEM, "stack variable allocation");
+        return print_error(EMEM, "stack variable allocation");
     data->name = strdup(name);
     data->offset = (gen->variables->count + 1) * 8;
     array_push(gen->variables, data);

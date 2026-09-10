@@ -15,7 +15,7 @@
 static status_t log_error(status_t type, void *ptr, char *message)
 {
     free(ptr);
-    return(get_error(type, message));
+    return get_error(type, message);
 }
 
 status_t lexer_extract_string(lexer_t *lexer)

@@ -20,3 +20,25 @@ status_t cb_init(code_buffer_t **cb)
     (*cb)->ptr = calloc(CB_BUFFER_CAPACITY, sizeof(unsigned char));
     return SUCCESS;
 }
+
+status_t cb_clear(code_buffer_t **cb)
+{
+    if (!cb || !(*cb) || !(*cb)->ptr)
+        return EELF;
+    for (size_t c = 0; c < (*cb)->len; c++)
+        (*cb)->ptr[c] = 0;
+    (*cb)->len = 0;
+    return SUCCESS;
+}
+
+status_t cb_destroy(code_buffer_t **cb)
+{
+    if (!cb)
+        return EELF;
+    if (*cb) {
+        free((*cb)->ptr);
+        free(*cb);
+    }
+    (*cb) = NULL;
+    return SUCCESS;
+}

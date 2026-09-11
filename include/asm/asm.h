@@ -11,7 +11,9 @@
     #include <elf.h>
     #include <sys/types.h>
     #include <stdlib.h>
+    #include <stdbool.h>
     #include "main.h"
+    #include "asm/asm_types.h"
 
     #define CB_BUFFER_CAPACITY (size_t)(2048)
 

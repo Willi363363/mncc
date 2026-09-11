@@ -55,7 +55,6 @@ status_t cb_adjust(code_buffer_t **cb, size_t add_size)
     return SUCCESS;
 }
 
-
 status_t cb_pos(code_buffer_t *cb, size_t *len)
 {
     if (!cb || !len)

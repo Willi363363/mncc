@@ -55,6 +55,7 @@ status_t cb_push_8(code_buffer_t **cb, uint64_t v)
 status_t cb_patch_8(code_buffer_t **cb, size_t offset, uint64_t v)
 {
     unsigned char *dest = NULL;
+
     if (!cb || !(*cb) || !(*cb)->ptr || (offset + 8) > (*cb)->len)
         return EELF;
     dest = &((*cb)->ptr[offset]);

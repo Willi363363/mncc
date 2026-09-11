@@ -18,7 +18,8 @@ typedef enum status_e {
     EPARSE,
     EGEN,
     EMEM,
-    EIMP
+    EIMP,
+    EELF,
 } status_t;
 
 #endif /* !MAIN_H_ */

@@ -36,5 +36,6 @@ status_t cb_push_8(code_buffer_t **cb, uint64_t v);
 
 // Data patch functions
 status_t cb_patch_8(code_buffer_t **cb, size_t offset, uint64_t v);
+status_t cb_pos(code_buffer_t *cb, size_t *len);
 
 #endif /* !ASM_H_ */

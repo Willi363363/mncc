@@ -21,4 +21,17 @@ typedef struct code_buffer_s {
     size_t tot;
 } code_buffer_t;
 
+//Helper functions
+status_t cb_init(code_buffer_t **cb);
+status_t cb_clear(code_buffer_t **cb);
+status_t cb_destroy(code_buffer_t **cb);
+status_t cb_adjust(code_buffer_t **cb, size_t add_size);
+
+// Data push functions
+status_t cb_push_1(code_buffer_t **cb, unsigned char v);
+status_t cb_push_2(code_buffer_t **cb, u_int16_t v);
+status_t cb_push_4(code_buffer_t **cb, u_int32_t v);
+status_t cb_push_8(code_buffer_t **cb, uint64_t v);
+
+
 #endif /* !ASM_H_ */

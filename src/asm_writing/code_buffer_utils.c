@@ -52,5 +52,5 @@ status_t cb_adjust(code_buffer_t **cb, size_t add_size)
             (*cb)->tot += CB_BUFFER_CAPACITY;
         (*cb)->ptr = realloc((*cb)->ptr, (*cb)->tot);
     }
-    
+    return SUCCESS;
 }

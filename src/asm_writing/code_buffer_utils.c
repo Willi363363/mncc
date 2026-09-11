@@ -42,3 +42,15 @@ status_t cb_destroy(code_buffer_t **cb)
     (*cb) = NULL;
     return SUCCESS;
 }
+
+status_t cb_adjust(code_buffer_t **cb, size_t add_size)
+{
+    if (!cb || !(*cb) || !(*cb)->ptr)
+        return EELF;
+    if ((*cb)->len + add_size > (*cb)->tot) {
+        while ((*cb)->tot < (*cb)->len + add_size)
+            (*cb)->tot += CB_BUFFER_CAPACITY;
+        (*cb)->ptr = realloc((*cb)->ptr, (*cb)->tot);
+    }
+    
+}

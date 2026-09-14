@@ -42,9 +42,18 @@ status_t cb_push_8(code_buffer_t **cb, uint64_t v);
 status_t cb_patch_8(code_buffer_t **cb, size_t offset, uint64_t v);
 status_t cb_pos(code_buffer_t *cb, size_t *len);
 
-// Header Writing
+// Section Header Writing
 status_t build_elf_header(Elf64_Ehdr *h, size_t entry_offset, size_t phnum);
 status_t destroy_elf_header(Elf64_Ehdr **h);
 status_t init_elf_header(Elf64_Ehdr **h);
+
+// Program Header Writing
+status_t build_phdr(Elf64_Phdr *h, size_t p_len);
+status_t destroy_phdr(Elf64_Phdr **h);
+status_t init_phdr(Elf64_Phdr **h);
+
+// Binary Writing
+status_t write_elf_file(const char *path, Elf64_Ehdr *ehdr,
+    Elf64_Phdr *phdr, code_buffer_t *cb);
 
 #endif /* !ASM_H_ */

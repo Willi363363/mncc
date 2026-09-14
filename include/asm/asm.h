@@ -17,6 +17,7 @@
 
     #define CB_BUFFER_CAPACITY (size_t)(2048)
     #define ELFW_VADDR_BASE 0x400000
+    #define ELFW_PHDR_ALIGN 0x1000
 
 typedef struct code_buffer_s {
     unsigned char *ptr;

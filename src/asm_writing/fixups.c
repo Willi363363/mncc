@@ -61,3 +61,20 @@ status_t fixup_list_free(fixup_list_t **fl)
     *fl = NULL;
     return SUCCESS;
 }
+
+status_t fixup_list_resolve(fixup_list_t *fl, symtab_t *st, code_buffer_t **cb)
+{
+    size_t target_offset = 0;
+    int32_t rel32 = 0;
+
+    if (!fl || !st || !cb || !*cb)
+        return EELF;
+    for (size_t i = 0; i < fl->len; i++) {
+        if (!symtab_lookup(st, fl->items[i].symbol, &target_offset))
+            return EELF;
+        rel32 = (int32_t)(target_offset - (fl->items[i].patch_offset + 4));
+        if (cb_patch_4(cb, fl->items[i].patch_offset, (uint32_t)rel32) == EELF)
+            return EELF;
+    }
+    return SUCCESS;
+}

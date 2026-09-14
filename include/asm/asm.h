@@ -35,7 +35,7 @@ status_t cb_push_4(code_buffer_t **cb, u_int32_t v);
 status_t cb_push_8(code_buffer_t **cb, uint64_t v);
 
 // Data patch functions
-status_t cb_patch_8(code_buffer_t **cb, size_t offset, uint64_t v);
+status_t cb_patch_4(code_buffer_t **cb, size_t offset, uint32_t v);
 status_t cb_pos(code_buffer_t *cb, size_t *len);
 
 // Section Header Writing

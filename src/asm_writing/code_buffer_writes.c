@@ -52,13 +52,13 @@ status_t cb_push_8(code_buffer_t **cb, uint64_t v)
     return SUCCESS;
 }
 
-status_t cb_patch_8(code_buffer_t **cb, size_t offset, uint64_t v)
+status_t cb_patch_4(code_buffer_t **cb, size_t offset, uint32_t v)
 {
     unsigned char *dest = NULL;
 
-    if (!cb || !(*cb) || !(*cb)->ptr || (offset + 8) > (*cb)->len)
+    if (!cb || !(*cb) || !(*cb)->ptr || (offset + 4) > (*cb)->len)
         return EELF;
     dest = &((*cb)->ptr[offset]);
-    *(uint64_t *)dest = v;
+    *(uint32_t *)dest = v;
     return SUCCESS;
 }

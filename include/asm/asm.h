@@ -16,6 +16,7 @@
     #include "asm/asm_types.h"
 
     #define CB_BUFFER_CAPACITY (size_t)(2048)
+    #define ELFW_VADDR_BASE 0x400000
 
 typedef struct code_buffer_s {
     unsigned char *ptr;
@@ -39,5 +40,10 @@ status_t cb_push_8(code_buffer_t **cb, uint64_t v);
 // Data patch functions
 status_t cb_patch_8(code_buffer_t **cb, size_t offset, uint64_t v);
 status_t cb_pos(code_buffer_t *cb, size_t *len);
+
+// Header Writing
+status_t build_elf_header(Elf64_Ehdr *h, size_t entry_offset, size_t phnum);
+status_t destroy_elf_header(Elf64_Ehdr **h);
+status_t init_elf_header(Elf64_Ehdr **h);
 
 #endif /* !ASM_H_ */

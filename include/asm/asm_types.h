@@ -20,6 +20,7 @@
     #define ELFW_VADDR_BASE 0x400000
     #define ELFW_PHDR_ALIGN 0x1000
     #define SYMTAB_DEFAULT_CAP 8
+    #define FIXUP_DEFAULT_CAP 8
 
 // Mod types
 typedef enum {
@@ -71,5 +72,16 @@ typedef struct {
     size_t len;
     size_t cap;
 } symtab_t;
+
+typedef struct {
+    size_t patch_offset;
+    char symbol[256];
+} fixup_t;
+
+typedef struct {
+    fixup_t *items;
+    size_t len;
+    size_t cap;
+} fixup_list_t;
 
 #endif /* !ASM_TYPES_H_ */

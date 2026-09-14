@@ -58,4 +58,11 @@ status_t symtab_free(symtab_t **st);
 status_t symtab_define(symtab_t **st, const char *name, size_t offset);
 bool symtab_lookup(symtab_t *st, const char *name, size_t *out_offset);
 
+// Fixups
+
+status_t fixup_list_init(fixup_list_t **fl);
+status_t fixup_list_add(fixup_list_t **fl,
+    size_t patch_offset, const char *symbol);
+status_t fixup_list_free(fixup_list_t **fl);
+
 #endif /* !ASM_H_ */

@@ -16,6 +16,11 @@
     #define REX_X 0x02
     #define REX_B 0x01
 
+    #define CB_BUFFER_CAPACITY (size_t)(2048)
+    #define ELFW_VADDR_BASE 0x400000
+    #define ELFW_PHDR_ALIGN 0x1000
+    #define SYMTAB_DEFAULT_CAP 8
+
 // Mod types
 typedef enum {
     MOD_INDIRECT = 0b00,
@@ -54,5 +59,17 @@ typedef enum {
     OPEXT_XOR = 0b110,
     OPEXT_CMP = 0b111,
 } op_ext_t;
+
+typedef struct {
+    char name[256];
+    size_t offset;
+    bool defined;
+} symbol_t;
+
+typedef struct {
+    symbol_t *items;
+    size_t len;
+    size_t cap;
+} symtab_t;
 
 #endif /* !ASM_TYPES_H_ */

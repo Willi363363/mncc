@@ -15,10 +15,6 @@
     #include "main.h"
     #include "asm/asm_types.h"
 
-    #define CB_BUFFER_CAPACITY (size_t)(2048)
-    #define ELFW_VADDR_BASE 0x400000
-    #define ELFW_PHDR_ALIGN 0x1000
-
 typedef struct code_buffer_s {
     unsigned char *ptr;
     size_t len;
@@ -55,5 +51,11 @@ status_t init_phdr(Elf64_Phdr **h);
 // Binary Writing
 status_t write_elf_file(const char *path, Elf64_Ehdr *ehdr,
     Elf64_Phdr *phdr, code_buffer_t *cb);
+
+// Symtabs management
+status_t symtab_init(symtab_t **st);
+status_t symtab_free(symtab_t **st);
+status_t symtab_define(symtab_t **st, const char *name, size_t offset);
+bool symtab_lookup(symtab_t *st, const char *name, size_t *out_offset);
 
 #endif /* !ASM_H_ */

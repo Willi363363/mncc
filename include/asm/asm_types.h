@@ -63,6 +63,13 @@ typedef enum {
     OPD_LABEL,
 } operand_kind_t;
 
+// CodeBuffer Struct
+typedef struct code_buffer_s {
+    unsigned char *ptr;
+    size_t len;
+    size_t tot;
+} code_buffer_t;
+
 typedef struct {
     char name[256];
     size_t offset;
@@ -85,6 +92,13 @@ typedef struct {
     size_t len;
     size_t cap;
 } fixup_list_t;
+
+// Tout regrouper d'un coup
+typedef struct {
+    code_buffer_t *cb;
+    symtab_t *st;
+    fixup_list_t *fl;
+} asm_ctx_t;
 
 typedef enum {
     OPEXT_ADD=0b000,
@@ -124,5 +138,21 @@ typedef struct {
 
 extern const instr_form_t instr_table[];
 extern const size_t instr_table_len;
+
+// Contexte d'encodage d'une instruction
+typedef struct {
+    asm_ctx_t *ctx;
+    const instr_form_t *form;
+    const operand_t *ops;
+    size_t n_ops;
+} encode_ctx_t;
+
+// Champs reg/rm résolus pour un octet ModRM
+typedef struct {
+    registers_t reg_field;
+    registers_t rm_reg;
+    bool rm_is_mem;
+    int8_t mem_disp;
+} modrm_info_t;
 
 #endif /* !ASM_TYPES_H_ */

@@ -13,11 +13,9 @@
     #include "main.h"
     #include "asm/asm_types.h"
 
-typedef struct code_buffer_s {
-    unsigned char *ptr;
-    size_t len;
-    size_t tot;
-} code_buffer_t;
+// REX / MODRM
+unsigned char make_rex(bool w, bool r, bool x, bool b);
+uint8_t make_modrm(mod_type_t mod, registers_t reg, registers_t rm);
 
 //Helper functions
 status_t cb_init(code_buffer_t **cb);
@@ -66,6 +64,7 @@ status_t fixup_list_free(fixup_list_t **fl);
 // Instructions forms
 status_t find_instr_form(const char *mnemonic, const operand_t *ops,
     size_t n_ops, const instr_form_t **f);
-
+status_t encode_from_table(asm_ctx_t *ctx, const instr_form_t *form,
+    const operand_t *ops, size_t n_ops);
 
 #endif /* !ASM_H_ */

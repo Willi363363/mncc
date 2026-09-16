@@ -67,4 +67,9 @@ status_t find_instr_form(const char *mnemonic, const operand_t *ops,
 status_t encode_from_table(asm_ctx_t *ctx, const instr_form_t *form,
     const operand_t *ops, size_t n_ops);
 
+// Parsing
+status_t tokenize_line(const char *line, token_list_t *out);
+bool is_label_definition(const token_list_t *tl, char *out_name,
+    size_t out_size);
+
 #endif /* !ASM_H_ */

@@ -20,6 +20,9 @@
     #define REX_X 0x02
     #define REX_B 0x01
 
+    #define MAX_TOKENS 8
+    #define MAX_TOKEN_LEN 64
+
     #define CB_BUFFER_CAPACITY (size_t)(2048)
     #define ELFW_VADDR_BASE 0x400000
     #define ELFW_PHDR_ALIGN 0x1000
@@ -154,5 +157,11 @@ typedef struct {
     bool rm_is_mem;
     int8_t mem_disp;
 } modrm_info_t;
+
+// Tokenizer ASM
+typedef struct {
+    char items[MAX_TOKENS][MAX_TOKEN_LEN];
+    size_t count;
+} token_list_t;
 
 #endif /* !ASM_TYPES_H_ */

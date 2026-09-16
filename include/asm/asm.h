@@ -9,9 +9,7 @@
     #define ASM_H_
 
     #include <elf.h>
-    #include <sys/types.h>
     #include <stdlib.h>
-    #include <stdbool.h>
     #include "main.h"
     #include "asm/asm_types.h"
 
@@ -64,5 +62,10 @@ status_t fixup_list_init(fixup_list_t **fl);
 status_t fixup_list_add(fixup_list_t **fl,
     size_t patch_offset, const char *symbol);
 status_t fixup_list_free(fixup_list_t **fl);
+
+// Instructions forms
+status_t find_instr_form(const char *mnemonic, const operand_t *ops,
+    size_t n_ops, const instr_form_t **f);
+
 
 #endif /* !ASM_H_ */

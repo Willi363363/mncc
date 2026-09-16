@@ -7,6 +7,10 @@
 
 #ifndef ASM_TYPES_H_
     #define ASM_TYPES_H_
+
+    #include <stdbool.h>
+    #include <sys/types.h>
+
     #define REG_VALUE(reg) ((unsigned char)((reg) & 0x7))
     #define REG_REX_VALUE(reg) ((unsigned char)(((reg) >> 3) & 0x1))
 
@@ -50,16 +54,14 @@ typedef enum {
     REG_R15 = 0b1111,
 } registers_t;
 
+// Op kind enum
 typedef enum {
-    OPEXT_ADD = 0b000,
-    OPEXT_OR = 0b001,
-    OPEXT_ADC = 0b010,
-    OPEXT_SBB = 0b011,
-    OPEXT_AND = 0b100,
-    OPEXT_SUB = 0b101,
-    OPEXT_XOR = 0b110,
-    OPEXT_CMP = 0b111,
-} op_ext_t;
+    OPD_NONE,
+    OPD_REG,
+    OPD_IMM,
+    OPD_MEM, // [base_reg ± disp8] -- base_reg n'importe lequel
+    OPD_LABEL,
+} operand_kind_t;
 
 typedef struct {
     char name[256];
@@ -83,5 +85,44 @@ typedef struct {
     size_t len;
     size_t cap;
 } fixup_list_t;
+
+typedef enum {
+    OPEXT_ADD=0b000,
+    OPEXT_OR=0b001,
+    OPEXT_ADC=0b010,
+    OPEXT_SBB=0b011,
+    OPEXT_AND=0b100,
+    OPEXT_SUB=0b101,
+    OPEXT_XOR=0b110,
+    OPEXT_CMP=0b111,
+} opext_t;
+
+// Encodage d'une instruction
+typedef struct {
+    operand_kind_t kind;
+    registers_t reg; /* OPD_REG, ou registre de BASE pour OPD_MEM */
+    int64_t imm; /* OPD_IMM */
+    int8_t disp; /* OPD_MEM */
+    char label[256]; /* OPD_LABEL */
+} operand_t;
+
+// Dictionnaire des formes de chaque keyword
+typedef struct {
+    const char *mnemonic;
+    operand_kind_t op1_kind;
+    operand_kind_t op2_kind;
+    bool needs_rex_w;
+    uint8_t opcode_prefix;
+    uint8_t opcode;
+    bool plus_reg;
+    bool has_modrm;
+    int8_t modrm_reg;
+    bool reg_is_op1;
+    uint8_t imm_size;
+    bool is_rel32;
+} instr_form_t;
+
+extern const instr_form_t instr_table[];
+extern const size_t instr_table_len;
 
 #endif /* !ASM_TYPES_H_ */

@@ -164,4 +164,9 @@ typedef struct {
     size_t count;
 } token_list_t;
 
+typedef struct {
+    const char *name;
+    registers_t reg;
+} reg_name_entry_t;
+
 #endif /* !ASM_TYPES_H_ */

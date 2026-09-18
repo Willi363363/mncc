@@ -15,6 +15,7 @@
 #include "lexer/lexer.h"
 #include "parser/parser.h"
 #include "utils/utils.h"
+#include "asm/asm.h"
 
 static int print_usage(void)
 {
@@ -64,7 +65,7 @@ static int process_generation(parser_t *parser)
         return EGEN;
     result = gen_run(gen);
     gen_destroy(gen);
-    nasm_assemble(".github/a.asm");
+    assemble_file(".github/a.asm", ".github/a.out");
     return result;
 }
 

@@ -46,21 +46,33 @@ static status_t extract_inner(const char *token, size_t len, char *inner,
     return SUCCESS;
 }
 
+static size_t skip_spaces(const char *s, size_t i)
+{
+    while (s[i] == ' ')
+        i++;
+    return i;
+}
+
 static void split_base_and_disp(const char *inner, char *base_name,
     int *disp)
 {
-    size_t i = 0;
+    size_t i = skip_spaces(inner, 0);
+    size_t j = 0;
     char sign;
 
-    while (inner[i] && inner[i] != '+' && inner[i] != '-') {
-        base_name[i] = inner[i];
+    while (inner[i] && inner[i] != '+' && inner[i] != '-' &&
+        inner[i] != ' ') {
+        base_name[j] = inner[i];
         i++;
+        j++;
     }
-    base_name[i] = '\0';
+    base_name[j] = '\0';
+    i = skip_spaces(inner, i);
     if (!inner[i])
         return;
     sign = inner[i];
-    *disp = (int)strtol(&inner[i + 1], NULL, 0);
+    i = skip_spaces(inner, i + 1);
+    *disp = (int)strtol(&inner[i], NULL, 0);
     if (sign == '-')
         *disp = -(*disp);
 }

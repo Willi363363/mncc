@@ -5,7 +5,15 @@
 ** parse_line
 */
 
+#include <string.h>
 #include "asm/asm.h"
+
+static bool is_directive(const token_list_t *tl)
+{
+    return tl->count >= 1 &&
+        (!strcmp(tl->items[0], "section") ||
+        !strcmp(tl->items[0], "global"));
+}
 
 static status_t parse_operands(const token_list_t *tl, operand_t *ops,
     size_t n_ops)
@@ -39,7 +47,7 @@ status_t parse_line(asm_ctx_t *ctx, const char *line)
 
     if (tokenize_line(line, &tl) != SUCCESS)
         return EELF;
-    if (tl.count == 0)
+    if (tl.count == 0 || is_directive(&tl))
         return SUCCESS;
     if (is_label_definition(&tl, label_name, sizeof(label_name)))
         return symtab_define(&ctx->st, label_name, ctx->cb->len);

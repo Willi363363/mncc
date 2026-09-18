@@ -71,5 +71,13 @@ status_t encode_from_table(asm_ctx_t *ctx, const instr_form_t *form,
 status_t tokenize_line(const char *line, token_list_t *out);
 bool is_label_definition(const token_list_t *tl, char *out_name,
     size_t out_size);
+status_t parse_operand(const char *token, operand_t *out);
+status_t parse_line(asm_ctx_t *ctx, const char *line);
+status_t assemble_file(const char *asm_path, const char *out_path);
+
+// Fixups resolution
+status_t fixup_list_resolve(fixup_list_t *fl, symtab_t *st,
+    code_buffer_t **cb);
+bool parse_register(const char *token, registers_t *out);
 
 #endif /* !ASM_H_ */

@@ -11,7 +11,7 @@
 static size_t skip_separators(const char *line, size_t len, size_t i)
 {
     while (i < len && (line[i] == ' ' || line[i] == '\t' ||
-            line[i] == ','))
+            line[i] == ',' || line[i] == '\n' || line[i] == '\r'))
         i++;
     return i;
 }
@@ -21,7 +21,20 @@ static size_t token_end(const char *line, size_t len, size_t start)
     size_t i = start;
 
     while (i < len && line[i] != ' ' && line[i] != '\t' &&
-        line[i] != ',' && line[i] != ';')
+        line[i] != ',' && line[i] != ';' && line[i] != '\n' &&
+        line[i] != '\r')
+        i++;
+    return i;
+}
+
+static size_t bracket_token_end(const char *line, size_t len, size_t start)
+{
+    size_t i = start;
+
+    while (i < len && line[i] != ']' && line[i] != ';' &&
+        line[i] != '\n' && line[i] != '\r')
+        i++;
+    if (i < len && line[i] == ']')
         i++;
     return i;
 }
@@ -53,7 +66,8 @@ status_t tokenize_line(const char *line, token_list_t *out)
         if (i >= len || line[i] == ';')
             break;
         start = i;
-        i = token_end(line, len, start);
+        i = (line[i] == '[') ? bracket_token_end(line, len, start) :
+            token_end(line, len, start);
         store_token(out, line, start, i);
     }
     return SUCCESS;

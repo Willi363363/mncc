@@ -101,6 +101,7 @@ static status_t process_file(char *path)
     }
     process_parsing(lexer);
     lexer_destroy(lexer);
+    free(buffer);
     return SUCCESS;
 }
 

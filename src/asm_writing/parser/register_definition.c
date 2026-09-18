@@ -31,7 +31,7 @@ static const reg_name_entry_t reg_names[] = {
     { "dl", REG_RDX },
 };
 
-static const int reg_names_len = sizeof(reg_names) / sizeof(reg_names[0]);
+static const size_t reg_names_len = sizeof(reg_names) / sizeof(reg_names[0]);
 
 bool parse_register(const char *token, registers_t *out)
 {
